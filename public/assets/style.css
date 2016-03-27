@@ -42,6 +42,10 @@ i.star {
     background-color: #bff;
 }
 
+.puzzle table td span.given {
+    font-weight: bold;
+}
+
 .puzzle td:first-child {
     border-left: solid;
 }

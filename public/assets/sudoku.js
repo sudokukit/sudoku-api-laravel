@@ -49,7 +49,12 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
 
     // Input 
     $scope.setSelectedCell = function(number) {
-        $scope.puzzle[$scope.selected.row][$scope.selected.cell] = number;
+        var cell = $scope.puzzle[$scope.selected.row][$scope.selected.cell];
+        if (cell.given) {
+            // cell is given so do nothing
+        } else {
+            cell.value = number;
+        }
     };
 
     hotkeys.add({
@@ -152,10 +157,10 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         }
     };
 
-    $scope.puzzleToString = function () {
+    $scope.puzzleToString = function() {
         $result = '';
-        for(var i =0;i <9; i++){
-            for(var j=0;j<9;j++){
+        for (var i = 0; i < 9; i++) {
+            for (var j = 0; j < 9; j++) {
                 $result += $scope.puzzle[i][j];
             }
         }
@@ -170,6 +175,7 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
             $scope.puzzle = response.data.puzzle;
             $scope.puzzleId = response.data.id;
             $scope.setDifficulty(response.data.difficulty);
+            $scope.resetResult();
         }, function errorCallback(response) {});
     };
 
@@ -181,6 +187,7 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
             $scope.puzzle = response.data.puzzle;
             $scope.puzzleId = response.data.id;
             $scope.setDifficulty(response.data.difficulty);
+            $scope.resetResult();
         }, function errorCallback(response) {});
     };
 
