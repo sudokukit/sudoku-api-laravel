@@ -167,15 +167,19 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         return $result;
     };
 
+    $scope.setPuzzle = function(data) {
+        $scope.puzzle = data.puzzle;
+        $scope.puzzleId = data.id;
+        $scope.setDifficulty(data.difficulty);
+        $scope.resetResult();
+    };
+
     $scope.reset = function() {
         $http({
             method: 'GET',
             url: '/api/puzzles/' + $scope.puzzleId
         }).then(function successCallback(response) {
-            $scope.puzzle = response.data.puzzle;
-            $scope.puzzleId = response.data.id;
-            $scope.setDifficulty(response.data.difficulty);
-            $scope.resetResult();
+            $scope.setPuzzle(response.data);
         }, function errorCallback(response) {});
     };
 
@@ -184,10 +188,7 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
             method: 'GET',
             url: '/api/puzzles/?difficulty=' + $scope.preferredDifficulty
         }).then(function successCallback(response) {
-            $scope.puzzle = response.data.puzzle;
-            $scope.puzzleId = response.data.id;
-            $scope.setDifficulty(response.data.difficulty);
-            $scope.resetResult();
+            $scope.setPuzzle(response.data);
         }, function errorCallback(response) {});
     };
 
