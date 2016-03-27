@@ -3,9 +3,6 @@ var sudokuMaster = angular.module('SudokuMaster', ['cfp.hotkeys']).config(functi
 });
 
 sudokuMaster.controller('sudokuController', ['$scope', 'hotkeys', function($scope, hotkeys) {
-    $scope.stars = [1, 2, 3, 4];
-    $scope.numberOfStars = 4;
-    $scope.difficulty = 'hard';
 
     // Navigating
     $scope.selected = {
@@ -130,6 +127,12 @@ sudokuMaster.controller('sudokuController', ['$scope', 'hotkeys', function($scop
     $scope.selectCell = function(rowId, cellId) {
         $scope.selected = { row: rowId, cell: cellId };
     };
+
+    // Puzzle
+
+    $scope.stars = [1, 2, 3, 4];
+    $scope.numberOfStars = 4;
+    $scope.difficulty = 'hard';
 
     $scope.puzzle = [
         [1, 2, 3, 4, 5, 6, 7, 8, 9],

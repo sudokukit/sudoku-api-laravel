@@ -57,9 +57,9 @@ i.star {
 }
 
 .buttons {
-    width: 500px;
-    margin: 10px auto;
-    font-size: 28px;
-    line-height: 40px;
     text-align: center;
+}
+
+.buttons button {
+    margin: 10px;
 }
