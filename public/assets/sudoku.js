@@ -154,27 +154,18 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
     };
 
     $scope.reset = function() {
-        $scope.puzzle = $scope.originalPuzzle;
-        // TODO get puzzle by id via api
-        // this will just make a reference to the original puzzle and doesn't work
+        $http({
+            method: 'GET',
+            url: '/api/puzzles/' + $scope.puzzleId
+        }).then(function successCallback(response) {
+            $scope.puzzle = response.data.puzzle;
+            $scope.puzzleId = response.data.id;
+            $scope.setDifficulty(response.data.difficulty);
+        }, function errorCallback(response) {});
     };
 
     // Initialize first puzzle
-    $scope.setDifficulty(1);
-    //$http.get('/api/puzzles/?difficulty=' + $scope.difficulty.level);
-
-    $scope.originalPuzzle = [
-        [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        [1, 2, 3, 4, 0, 6, 7, 8, 9],
-        [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        [1, 2, 3, 4, 0, 6, 7, 0, 9],
-        [1, 2, 0, 4, 5, 6, 7, 8, 9],
-        [1, 2, 3, 4, 5, 0, 7, 8, 9],
-        [1, 2, 3, 4, 5, 6, 0, 8, 9],
-        [1, 2, 3, 4, 5, 6, 7, 8, 9],
-        [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    ];
-
+    $scope.preferredDifficulty = 3;
     $scope.reset();
 
 }]);
