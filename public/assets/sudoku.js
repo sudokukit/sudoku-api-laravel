@@ -1,6 +1,6 @@
-var sudokuMaster = angular.module('SudokuMaster', []);
+var sudokuMaster = angular.module('SudokuMaster', ['cfp.hotkeys']);
 
-sudokuMaster.controller('sudokuController', ['$scope', function($scope) {
+sudokuMaster.controller('sudokuController', ['$scope', 'hotkeys', function($scope, hotkeys) {
     $scope.stars = [1, 2, 3, 4];
     $scope.numberOfStars = 4;
     $scope.difficulty = 'hard';
@@ -8,6 +8,18 @@ sudokuMaster.controller('sudokuController', ['$scope', function($scope) {
         row: 0,
         cell: 0
     };
+
+    $scope.emptySelectedCell = function() {
+        $scope.key = 'Yes';
+    };
+
+    hotkeys.add({
+        combo: '0',
+        description: 'Empty the selected cell',
+        callback: function() {
+            $scope.emptySelectedCell();
+        }
+    });
 
     $scope.selectCell = function(rowId, cellId) {
         $scope.selected = { row: rowId, cell: cellId };

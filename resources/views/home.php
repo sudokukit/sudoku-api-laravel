@@ -4,11 +4,13 @@
 		<title>SudokuMaster.net | Play Sudoku!</title>
 
 		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
-		<link href="https://fonts.googleapis.com/css?family=Lora:400,700&subset=latin,latin-ext" rel='stylesheet' type='text/css'>
-		<link rel="stylesheet" type="text/css" href="/assets/style.css">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 
+		<link rel="stylesheet" type="text/css" href="/assets/style.css">
+		<link rel="stylesheet" type="text/css" href="/assets/hotkeys.min.css">
+		
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+		<script type="text/javascript" src="/assets/hotkeys.min.js"></script>
 		<script type="text/javascript" src="/assets/sudoku.js"></script>
 	
 	</head>
@@ -22,6 +24,7 @@
 				</div>
 				<div class="description">
 					<h3>Difficulty: {{difficulty}} ({{numberOfStars}} star{{numberOfStars == 1 ? "" : "s"}})</h3>
+					<h4>Key Pressed? {{key}}</h4>
 				</div>
 			</div>
 			<div class="puzzle" >
@@ -33,9 +36,14 @@
 			</div>
 
 			<div class="buttons">
-				<input ng-model="name" type="text">
-				<h2>{{name}}</h2>
-				validate, new game
+				<button class="btn btn-default">
+					<i class="glyphicon glyphicon"></i>
+					Check Sudoku
+				</button>
+				<button class="btn btn-success">
+					<i class="glyphicon glyphicon"></i>
+					New Game
+				</button>
 			</div>
 		</div>
 	</body>
