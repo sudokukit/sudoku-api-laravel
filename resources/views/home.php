@@ -27,7 +27,7 @@
 			<div class="puzzle" >
 				<table>
 					<tr ng-repeat="row in puzzle">
-						<td ng-repeat="item in row track by $index">{{item == 0 ? '' : item }}</td>
+						<td ng-repeat="item in row track by $index" ng-class=" $index == selected.cell && $parent.$index == selected.row ? 'selected' : '' " ng-click="selectCell($parent.$index,$index)">{{item == 0 ? '' : item }}</td>
 					</tr>
 				</table>	
 			</div>
