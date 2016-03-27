@@ -12,3 +12,6 @@
 */
 
 Route::get('/', 'HomeController@index');
+Route::get('/api/puzzles/?difficulty={level}','ApiController@getPuzzleByDifficulty');
+Route::get('/api/puzzles/{id}','ApiController@getPuzzleById');
+Route::get('/api/solutions/?id={id}&solution={solution}','ApiController@checkSolution');

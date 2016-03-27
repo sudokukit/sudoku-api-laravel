@@ -2,7 +2,7 @@ var sudokuMaster = angular.module('SudokuMaster', ['cfp.hotkeys']).config(functi
     hotkeysProvider.includeCheatSheet = false;
 });
 
-sudokuMaster.controller('sudokuController', ['$scope', 'hotkeys', function($scope, hotkeys) {
+sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', function($scope, $http, hotkeys) {
 
     // Navigating
     $scope.selected = {
@@ -130,11 +130,40 @@ sudokuMaster.controller('sudokuController', ['$scope', 'hotkeys', function($scop
 
     // Puzzle
 
-    $scope.stars = [1, 2, 3, 4];
-    $scope.numberOfStars = 4;
-    $scope.difficulty = 'hard';
+    $scope.setDifficulty = function(difficulty) {
+        switch (difficulty) {
+            case 1:
+                $scope.difficulty = { name: 'Very Easy', level: 1, stars: [1] };
+                break;
+            case 2:
+                $scope.difficulty = { name: 'Easy', level: 2, stars: [1, 2] };
+                break;
+            case 3:
+                $scope.difficulty = { name: 'Normal', level: 3, stars: [1, 2, 3] };
+                break;
+            case 4:
+                $scope.difficulty = { name: 'Hard', level: 4, stars: [1, 2, 3, 4] };
+                break;
+            case 5:
+                $scope.difficulty = { name: 'Legendary', level: 5, stars: [1, 2, 3, 4, 5] };
+                break;
+            default:
+                $scope.setDifficulty(1);
+                break;
+        }
+    };
 
-    $scope.puzzle = [
+    $scope.reset = function() {
+        $scope.puzzle = $scope.originalPuzzle;
+        // TODO get puzzle by id via api
+        // this will just make a reference to the original puzzle and doesn't work
+    };
+
+    // Initialize first puzzle
+    $scope.setDifficulty(1);
+    //$http.get('/api/puzzles/?difficulty=' + $scope.difficulty.level);
+
+    $scope.originalPuzzle = [
         [1, 2, 3, 4, 5, 6, 7, 8, 9],
         [1, 2, 3, 4, 0, 6, 7, 8, 9],
         [1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -145,5 +174,7 @@ sudokuMaster.controller('sudokuController', ['$scope', 'hotkeys', function($scop
         [1, 2, 3, 4, 5, 6, 7, 8, 9],
         [1, 2, 3, 4, 5, 6, 7, 8, 9]
     ];
+
+    $scope.reset();
 
 }]);
