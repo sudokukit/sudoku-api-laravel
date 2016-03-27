@@ -9,15 +9,78 @@ sudokuMaster.controller('sudokuController', ['$scope', 'hotkeys', function($scop
         cell: 0
     };
 
-    $scope.emptySelectedCell = function() {
-        $scope.key = 'Yes';
+    $scope.setSelectedCell = function(number) {
+        $scope.puzzle[$scope.selected.row][$scope.selected.cell] = number;
     };
 
     hotkeys.add({
         combo: '0',
         description: 'Empty the selected cell',
         callback: function() {
-            $scope.emptySelectedCell();
+            $scope.setSelectedCell(0);
+        }
+    });
+    hotkeys.add({
+        combo: '1',
+        description: 'Puts 1 in the selected cell',
+        callback: function() {
+            $scope.setSelectedCell(1);
+        }
+    });
+    hotkeys.add({
+        combo: '2',
+        description: 'Puts 2 in the selected cell',
+        callback: function() {
+            $scope.setSelectedCell(2);
+        }
+    });
+    hotkeys.add({
+        combo: '3',
+        description: 'Puts 3 in the selected cell',
+        callback: function() {
+            $scope.setSelectedCell(3);
+        }
+    });
+    hotkeys.add({
+        combo: '4',
+        description: 'Puts 4 in the selected cell',
+        callback: function() {
+            $scope.setSelectedCell(4);
+        }
+    });
+    hotkeys.add({
+        combo: '5',
+        description: 'Puts 5 in the selected cell',
+        callback: function() {
+            $scope.setSelectedCell(5);
+        }
+    });
+    hotkeys.add({
+        combo: '6',
+        description: 'Puts 6 in the selected cell',
+        callback: function() {
+            $scope.setSelectedCell(6);
+        }
+    });
+    hotkeys.add({
+        combo: '7',
+        description: 'Puts 7 in the selected cell',
+        callback: function() {
+            $scope.setSelectedCell(7);
+        }
+    });
+    hotkeys.add({
+        combo: '8',
+        description: 'Puts 8 in the selected cell',
+        callback: function() {
+            $scope.setSelectedCell(8);
+        }
+    });
+    hotkeys.add({
+        combo: '9',
+        description: 'Puts 9 in the selected cell',
+        callback: function() {
+            $scope.setSelectedCell(9);
         }
     });
 

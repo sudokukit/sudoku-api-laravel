@@ -24,7 +24,6 @@
 				</div>
 				<div class="description">
 					<h3>Difficulty: {{difficulty}} ({{numberOfStars}} star{{numberOfStars == 1 ? "" : "s"}})</h3>
-					<h4>Key Pressed? {{key}}</h4>
 				</div>
 			</div>
 			<div class="puzzle" >
@@ -36,12 +35,17 @@
 			</div>
 
 			<div class="buttons">
-				<button class="btn btn-default">
-					<i class="glyphicon glyphicon"></i>
+
+				<button class="btn btn-danger">
+					<i class="glyphicon glyphicon-remove"></i>
+					Reset
+				</button>
+				<button class="btn btn-primary">
+					<i class="glyphicon glyphicon-ok"></i>
 					Check Sudoku
 				</button>
 				<button class="btn btn-success">
-					<i class="glyphicon glyphicon"></i>
+					<i class="glyphicon glyphicon-play"></i>
 					New Game
 				</button>
 			</div>
