@@ -34,16 +34,17 @@
 			</div>
 
 			<div class="buttons">
+			<h4>{{result}}</h4>
 
 				<button type="button" class="btn btn-danger btn-lg" ng-click="reset()">
 					<i class="glyphicon glyphicon-remove"></i>
 					Reset
 				</button>
-				<button type="button" class="btn btn-primary btn-lg">
+				<button type="button" class="btn btn-primary btn-lg" ng-click="validate()">
 					<i class="glyphicon glyphicon-ok"></i>
 					Check Sudoku
 				</button>
-				<button type="button" class="btn btn-success btn-lg">
+				<button type="button" class="btn btn-success btn-lg" ng-click="newGame()">
 					<i class="glyphicon glyphicon-play"></i>
 					New Game
 				</button>

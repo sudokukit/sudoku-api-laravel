@@ -129,7 +129,6 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
     };
 
     // Puzzle
-
     $scope.setDifficulty = function(difficulty) {
         switch (difficulty) {
             case 1:
@@ -153,6 +152,16 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         }
     };
 
+    $scope.puzzleToString = function () {
+        $result = '';
+        for(var i =0;i <9; i++){
+            for(var j=0;j<9;j++){
+                $result += $scope.puzzle[i][j];
+            }
+        }
+        return $result;
+    };
+
     $scope.reset = function() {
         $http({
             method: 'GET',
@@ -164,8 +173,33 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         }, function errorCallback(response) {});
     };
 
+    $scope.newGame = function() {
+        $http({
+            method: 'GET',
+            url: '/api/puzzles/?difficulty=' + $scope.preferredDifficulty
+        }).then(function successCallback(response) {
+            $scope.puzzle = response.data.puzzle;
+            $scope.puzzleId = response.data.id;
+            $scope.setDifficulty(response.data.difficulty);
+        }, function errorCallback(response) {});
+    };
+
+    $scope.validate = function() {
+        $http({
+            method: 'GET',
+            url: '/api/solutions/?id=' + $scope.puzzleId + '&solution=' + $scope.puzzleToString()
+        }).then(function successCallback(response) {
+            $scope.result = response.data.result;
+        }, function errorCallback(response) {});
+    };
+
+    $scope.resetResult = function() {
+        $scope.result = "No results yet. Hit 'Check Sudoku' to check your progress!";
+    }
+
     // Initialize first puzzle
     $scope.preferredDifficulty = 3;
-    $scope.reset();
+    $scope.newGame();
+    $scope.resetResult();
 
 }]);

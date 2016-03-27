@@ -18,7 +18,7 @@ class ApiController extends Controller
 		return response()->json(array('puzzle' => $puzzle, 'id' => 1, 'difficulty'=>5));
 	}
 
-	public function checkSolution($id,$solution){
-		return response()->json(array('solution' => 'Perfect'));
+	public function checkSolution(Request $request, $id = null,$solution = null){
+		return response()->json(array('result' => 'Perfect! How about a new game?'));
 	}
 }
