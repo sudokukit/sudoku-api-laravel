@@ -1,14 +1,56 @@
-var sudokuMaster = angular.module('SudokuMaster', ['cfp.hotkeys']);
+var sudokuMaster = angular.module('SudokuMaster', ['cfp.hotkeys']).config(function(hotkeysProvider) {
+    hotkeysProvider.includeCheatSheet = false;
+});
 
 sudokuMaster.controller('sudokuController', ['$scope', 'hotkeys', function($scope, hotkeys) {
     $scope.stars = [1, 2, 3, 4];
     $scope.numberOfStars = 4;
     $scope.difficulty = 'hard';
+
+    // Navigating
     $scope.selected = {
         row: 0,
         cell: 0
     };
 
+    $scope.moveUp = function() {
+        if ($scope.selected.row == 0) {
+            $scope.selected.row = 8;
+        } else {
+            $scope.selected.row--;
+        }
+    };
+
+    $scope.moveDown = function() {
+        if ($scope.selected.row == 8) {
+            $scope.selected.row = 0;
+        } else {
+            $scope.selected.row++;
+        }
+    };
+
+    $scope.moveLeft = function() {
+        if ($scope.selected.cell == 0) {
+            $scope.selected.cell = 8;
+        } else {
+            $scope.selected.cell--;
+        }
+    };
+
+    $scope.moveRight = function() {
+        if ($scope.selected.cell == 8) {
+            $scope.selected.cell = 0;
+        } else {
+            $scope.selected.cell++;
+        }
+    };
+
+    hotkeys.add({ combo: 'up', description: 'Move up', callback: function() { $scope.moveUp(); } });
+    hotkeys.add({ combo: 'down', description: 'Move down', callback: function() { $scope.moveDown(); } });
+    hotkeys.add({ combo: 'left', description: 'Move left', callback: function() { $scope.moveLeft(); } });
+    hotkeys.add({ combo: 'right', description: 'Move right', callback: function() { $scope.moveRight(); } });
+
+    // Input 
     $scope.setSelectedCell = function(number) {
         $scope.puzzle[$scope.selected.row][$scope.selected.cell] = number;
     };
@@ -83,6 +125,7 @@ sudokuMaster.controller('sudokuController', ['$scope', 'hotkeys', function($scop
             $scope.setSelectedCell(9);
         }
     });
+
 
     $scope.selectCell = function(rowId, cellId) {
         $scope.selected = { row: rowId, cell: cellId };
