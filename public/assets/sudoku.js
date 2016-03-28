@@ -65,6 +65,13 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         }
     });
     hotkeys.add({
+        combo: 'backspace',
+        description: 'Empty the selected cell',
+        callback: function() {
+            $scope.setSelectedCell(0);
+        }
+    });
+    hotkeys.add({
         combo: '1',
         description: 'Puts 1 in the selected cell',
         callback: function() {
