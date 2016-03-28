@@ -9,22 +9,32 @@ use App\Http\Requests;
 use App\LibrarySudoku\SudokuValidator;
 use App\LibrarySudoku\SudokuGrid;
 use App\LibrarySudoku\SudokuParser;
+use App\LibrarySudoku\SudokuPuzzle;
 
 class ApiController extends Controller
 {
 	public function getPuzzle(Request $request, $id = null){
-		for($i = 0 ;$i < 9; $i++){
-			for($j = 0; $j<9;$j++){
-				$puzzle[$i][$j] = array('given' => true, 'value' => $j+1);
-			}
-		}
-		$puzzle[0][0] = array('given' => false, 'value' => 23);
-		return response()->json(array('puzzle' => $puzzle, 'id' => 1, 'difficulty'=>5));
+		$puzzleAsString = "004060007010970040006050030045300021009102700620005490050010900090024060200030100";
+		$sudokuParser = new SudokuParser;
+		$sudokuGrid= $sudokuParser->parse($puzzleAsString);
+		
+		$sudokuPuzzle = new SudokuPuzzle;
+		$sudokuPuzzle->setDifficulty(3);
+		$sudokuPuzzle->setId('uuid123');
+		$sudokuPuzzle->setSolutionId('uuid123');
+		$sudokuPuzzle->setPuzzle($sudokuGrid);
+
+		return response()->json(array(
+			'puzzle' => $sudokuPuzzle->getPuzzle(), 
+			'id' => $sudokuPuzzle->getId(), 
+			'difficulty'=>$sudokuPuzzle->getDifficulty()
+			));
 	}
 
 	public function checkSolution(Request $request, $id = null){
-				// todo check input
+		// todo check input
 		$solution = $request->query('solution');
+		// todo check solution length and exotic characters
 		$sudokuParser = new SudokuParser;
 		$sudokuGrid= $sudokuParser->parse($solution);
 

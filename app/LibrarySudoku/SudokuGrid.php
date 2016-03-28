@@ -28,6 +28,10 @@ class SudokuGrid {
 		$this->grid = $grid;
 	}
 
+	public function getGrid(){
+		return $this->grid;
+	}
+
 	public function getRow(int $y){
 		return $this->grid[$y];
 	}

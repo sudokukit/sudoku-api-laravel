@@ -6,7 +6,7 @@ class SudokuParser {
 	public function parse(string $string){
 		$grid=[];
 		for($i = 0;$i<9;$i++){
-			$grid[$i] = $this->parseRow(substr($string,$i,9));
+			$grid[$i] = $this->parseRow(substr($string,$i*9,9));
 		}
 		$sudokuGrid = new SudokuGrid;
 		$sudokuGrid->setGrid($grid);
