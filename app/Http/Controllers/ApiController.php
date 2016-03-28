@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 use App\Http\Requests;
+use App\LibrarySudoku\SudokuValidator;
+use App\LibrarySudoku\SudokuGrid;
 
 class ApiController extends Controller
 {
@@ -20,6 +22,22 @@ class ApiController extends Controller
 	}
 
 	public function checkSolution(Request $request, $id = null,$solution = null){
-		return response()->json(array('result' => 'Perfect! How about a new game?'));
+
+		// todo check input
+		// todo parse solution into SudokuGrid
+		$sudokuGrid= new SudokuGrid;
+
+		$validator = new SudokuValidator;
+		if($validator->validate($sudokuGrid)){
+			$numberOfZeros = $validator->countZeros($sudokuGrid);
+				if($numberOfZeros > 0){
+					$message = "Going great! You still have ".$numberOfZeros." cells to fill.";
+				} else {
+					$message = "Perfect! How about a new game?";
+				}
+		} else {
+			$message = "Oops! Looks like you made a mistake. Think you can find it without using reset?";
+		}
+		return response()->json(array('result' => $message));
 	}
 }

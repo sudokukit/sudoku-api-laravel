@@ -13,9 +13,9 @@ class CreatePuzzlesTable extends Migration
     public function up()
     {
         Schema::create('puzzles', function (Blueprint $table) {
-            $table->uuid('id');
-            $table->integer('difficulty');
-            $table->string('solution_id');
+            $table->uuid('id')->index();
+            $table->integer('difficulty')->index();
+            $table->string('solution_id')->index();
             $table->string('grid');
             $table->timestamps();
         });

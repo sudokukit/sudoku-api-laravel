@@ -161,7 +161,7 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         $result = '';
         for (var i = 0; i < 9; i++) {
             for (var j = 0; j < 9; j++) {
-                $result += $scope.puzzle[i][j];
+                $result += $scope.puzzle[i][j].value.toString();
             }
         }
         return $result;
