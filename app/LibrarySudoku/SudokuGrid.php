@@ -24,6 +24,10 @@ class SudokuGrid {
 		return $this->grid[$y][$x];
 	}
 
+	public function setGrid($grid){
+		$this->grid = $grid;
+	}
+
 	public function getRow(int $y){
 		return $this->grid[$y];
 	}

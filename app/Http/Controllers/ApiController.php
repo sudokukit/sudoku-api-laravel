@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use App\Http\Requests;
 use App\LibrarySudoku\SudokuValidator;
 use App\LibrarySudoku\SudokuGrid;
+use App\LibrarySudoku\SudokuParser;
 
 class ApiController extends Controller
 {
@@ -21,11 +22,11 @@ class ApiController extends Controller
 		return response()->json(array('puzzle' => $puzzle, 'id' => 1, 'difficulty'=>5));
 	}
 
-	public function checkSolution(Request $request, $id = null,$solution = null){
-
-		// todo check input
-		// todo parse solution into SudokuGrid
-		$sudokuGrid= new SudokuGrid;
+	public function checkSolution(Request $request, $id = null){
+				// todo check input
+		$solution = $request->query('solution');
+		$sudokuParser = new SudokuParser;
+		$sudokuGrid= $sudokuParser->parse($solution);
 
 		$validator = new SudokuValidator;
 		if($validator->validate($sudokuGrid)){
