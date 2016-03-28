@@ -13,7 +13,8 @@ class CreateSolutionsTable extends Migration
     public function up()
     {
         Schema::create('solutions', function (Blueprint $table) {
-            $table->increments('id');
+            $table->uuid('id');
+            $table->string('grid');
             $table->timestamps();
         });
     }
