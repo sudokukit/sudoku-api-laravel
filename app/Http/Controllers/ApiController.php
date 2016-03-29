@@ -11,28 +11,22 @@ use App\LibrarySudoku\SudokuGrid;
 use App\LibrarySudoku\SudokuParser;
 use App\LibrarySudoku\SudokuPuzzle;
 use App\LibrarySudoku\SolutionGenerator;
+use App\LibrarySudoku\PuzzleGenerator;
 
 class ApiController extends Controller
 {
 	public function getPuzzle(Request $request, $id = null){
-		$puzzleAsString = "004060007010970040006050030045300021009102700620005490050010900090024060200030100";
-		$emptyPuzzleAsString ="000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-		$sudokuParser = new SudokuParser;
-		$sudokuGrid= $sudokuParser->parse($puzzleAsString);
-
+		
 		$solutionGenerator = new SolutionGenerator;
-		$sudokuGrid2 = $solutionGenerator->generateSolution();
+		$solution = $solutionGenerator->generateSolution();
 
-		$sudokuPuzzle = new SudokuPuzzle;
-		$sudokuPuzzle->setDifficulty(3);
-		$sudokuPuzzle->setId('uuid123');
-		$sudokuPuzzle->setSolutionId('uuid123');
-		$sudokuPuzzle->setPuzzle($sudokuGrid2);
+		$puzzleGenerator = new PuzzleGenerator;
+		$puzzle = $puzzleGenerator->generatePuzzle($solution,3);
 
 		return response()->json(array(
-			'puzzle' => $sudokuPuzzle->getPuzzle(), 
-			'id' => $sudokuPuzzle->getId(), 
-			'difficulty'=>$sudokuPuzzle->getDifficulty()
+			'puzzle' => $puzzle->getPuzzle(), 
+			'id' => $puzzle->getId(), 
+			'difficulty'=>$puzzle->getDifficulty()
 			));
 	}
 
