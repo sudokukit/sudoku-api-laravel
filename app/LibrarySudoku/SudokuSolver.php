@@ -1,7 +1,7 @@
 <?php
 
-namespace App\LibrarySudoku
+namespace App\LibrarySudoku;
 
-public interface SudokuSolver {
+interface SudokuSolver {
 	public function solve(SudokuGrid $sudokuGrid);		
 }

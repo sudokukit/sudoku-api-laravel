@@ -1,16 +1,15 @@
 <?php
 
-namespace App\LibrarySudoku
+namespace App\LibrarySudoku;
 
 class SolutionGenerator {
 
 	private $sudokuGrid;
 
 	public function generateSolution(){
-		do {
-			$sudokuGrid = new SudokuGrid;
-			$this->placeRandomStarters();	
-		} while(!$this->solveSudoku());
+		$this->sudokuGrid = new SudokuGrid;
+		$this->placeRandomStarters();
+		$this->solveSudoku();
 		return $this->sudokuGrid;
 	}
 
@@ -19,9 +18,9 @@ class SolutionGenerator {
 			$location = $this->getRandomEmptyCell();
 			do{
 				$value = rand(1,9);
-				$this->sudokuGrid->setCell($location['x'],$location['y'],$value);
+				$this->sudokuGrid->setCell($location[0],$location[1],$value);
 			}
-			while($this->isValid());
+			while(!$this->isValid());
 		}
 	}
 
@@ -34,14 +33,14 @@ class SolutionGenerator {
 		$x=0;
 		$y=0;
 		do{
-			$x = rand(1,9);
-			$y = rand(1,9);
+			$x = rand(0,8);
+			$y = rand(0,8);
 		} while($this->sudokuGrid->getCell($x,$y) != 0);
-		return array('x'=>$x,'y'=>$y);
+		return [$x,$y];
 	}
 
 	private function solveSudoku(){
-		$solver = new BruteForceSolver;
+		$solver = new BacktrackSolver;
 		if($solver->solve($this->sudokuGrid)){
 			return true;
 		} else {
