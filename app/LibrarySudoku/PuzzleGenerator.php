@@ -56,10 +56,10 @@ class PuzzleGenerator{
 
 	private function canDig($location, $bound){
 		$digConsultant = new DigConsultant;
-		if($digConsultant->ConsultOnDigging($this->sudokuGrid, $location, $bound)){
-			return true;
+		if(!$digConsultant->ConsultOnDigging($this->sudokuGrid, $location, $bound)){
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	private function createPuzzle(){

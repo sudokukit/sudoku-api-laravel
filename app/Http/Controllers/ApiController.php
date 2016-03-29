@@ -21,7 +21,7 @@ class ApiController extends Controller
 		$solution = $solutionGenerator->generateSolution();
 
 		$puzzleGenerator = new PuzzleGenerator;
-		$puzzle = $puzzleGenerator->generatePuzzle($solution,3);
+		$puzzle = $puzzleGenerator->generatePuzzle($solution,5);
 
 		return response()->json(array(
 			'puzzle' => $puzzle->getPuzzle(), 
