@@ -21,7 +21,7 @@
 					<i ng-repeat="star in difficulty.stars" class="glyphicon glyphicon-star star"></i>
 				</div>
 				<div class="description">
-					<h3>Difficulty: {{difficulty.name}} ({{difficulty.level}} star{{difficulty.level == 1 ? "" : "s"}})</h3>
+					<h4>Difficulty: {{difficulty.name}} ({{difficulty.level}} star{{difficulty.level == 1 ? "" : "s"}})</h4>
 				</div>
 			</div>
 

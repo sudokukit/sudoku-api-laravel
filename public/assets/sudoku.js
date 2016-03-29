@@ -189,7 +189,7 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
     $scope.newGame = function() {
         $http({
             method: 'GET',
-            url: '/api/puzzles/?difficulty=' + $scope.preferredDifficulty
+            url: '/api/puzzles/?difficulty=3'
         }).then(function successCallback(response) {
             $scope.setPuzzle(response.data);
         }, function errorCallback(response) {});
@@ -209,7 +209,6 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
     }
 
     // Initialize first puzzle
-    $scope.preferredDifficulty = 3;
     $scope.newGame();
     $scope.resetResult();
 
