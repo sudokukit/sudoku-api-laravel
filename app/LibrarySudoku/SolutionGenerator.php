@@ -7,9 +7,10 @@ class SolutionGenerator {
 	private $sudokuGrid;
 
 	public function generateSolution(){
-		$this->sudokuGrid = new SudokuGrid;
-		$this->placeRandomStarters();
-		$this->solveSudoku();
+		do{
+			$this->sudokuGrid = new SudokuGrid;
+			$this->placeRandomStarters();
+			}while(!$this->solveSudoku());
 		return $this->sudokuGrid;
 	}
 

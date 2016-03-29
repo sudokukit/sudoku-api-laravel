@@ -176,18 +176,14 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
 
     $scope.setPuzzle = function(data) {
         $scope.puzzle = data.puzzle;
+        $scope.backupPuzzle = angular.copy(data.puzzle);
         $scope.puzzleId = data.id;
         $scope.setDifficulty(data.difficulty);
         $scope.resetResult();
     };
 
     $scope.reset = function() {
-        $http({
-            method: 'GET',
-            url: '/api/puzzles/' + $scope.puzzleId
-        }).then(function successCallback(response) {
-            $scope.setPuzzle(response.data);
-        }, function errorCallback(response) {});
+        $scope.puzzle = angular.copy($scope.backupPuzzle);
     };
 
     $scope.newGame = function() {
