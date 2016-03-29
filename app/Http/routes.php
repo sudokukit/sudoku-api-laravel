@@ -11,6 +11,6 @@
 |
 */
 
-Route::get('/', 'HomeController@index');
+Route::get('/','HomeController@index');
 Route::get('/api/puzzles/{id?}','ApiController@getPuzzle');
 Route::get('/api/solutions/{id?}','ApiController@checkSolution');
