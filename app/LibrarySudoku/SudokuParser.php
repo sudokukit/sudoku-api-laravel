@@ -3,7 +3,7 @@
 namespace App\LibrarySudoku;
 
 class SudokuParser {
-	public function parse(string $string){
+	public function parse($string){
 		$grid=[];
 		for($i = 0;$i<9;$i++){
 			$grid[$i] = $this->parseRow(substr($string,$i*9,9));
@@ -13,7 +13,7 @@ class SudokuParser {
 		return $sudokuGrid;
 	}
 
-	private function parseRow(string $string){
+	private function parseRow($string){
 		$row = [];
 		for($i=0;$i<9;$i++){
 			$char = $string{$i};

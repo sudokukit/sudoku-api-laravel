@@ -14,13 +14,13 @@ class SudokuGrid {
 		$this->grid = $grid;
 	}
 
-	public function setCell(int $x, int $y, int $value){
+	public function setCell($x, $y, $value){
 		if($value >= 0 && $value <= 9){
 			$this->grid[$y][$x] = $value;
 		}
 	}
 
-	public function getCell(int $x, int $y){
+	public function getCell($x, $y){
 		return $this->grid[$y][$x];
 	}
 
@@ -32,11 +32,11 @@ class SudokuGrid {
 		return $this->grid;
 	}
 
-	public function getRow(int $y){
+	public function getRow($y){
 		return $this->grid[$y];
 	}
 
-	public function getColumn(int $x){
+	public function getColumn($x){
 		$column = [];
 		for($i = 0;$i<9;$i++){
 			$column[$i] = $this->getCell($x,$i);
@@ -44,14 +44,14 @@ class SudokuGrid {
 		return $column;
 	}
 
-	public function getBlockByNumber(int $b){
+	public function getBlockByNumber($b){
 		$mod3 = $b % 3;
 		$x_start = $mod3 * 3;
 		$y_start = $b - $mod3;
 		return $this->getBlock($x_start,$y_start);
 	}
 
-	public function getBlock(int $x, int $y){
+	public function getBlock($x, $y){
 		$block = [];
 		$mod_x = $x % 3;
 		$mod_y = $y % 3;
@@ -67,7 +67,7 @@ class SudokuGrid {
 		return $block;
 	}
 
-	public function possibilitiesFor(int $x, int $y){
+	public function possibilitiesFor($x, $y){
 		if($this->getCell($x,$y) > 0){
 			return null;
 		}

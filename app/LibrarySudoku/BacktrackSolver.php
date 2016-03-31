@@ -83,7 +83,7 @@ class BacktrackSolver implements SudokuSolver{
 		return $values[$random-1];
 	}
 
-	private function isGiven(int $x, int $y){
+	private function isGiven($x, $y){
 		for($i=0;$i<count($this->given);$i++){
 			if($this->given[$i]['x'] == $x && $this->given[$i]['y'] == $y){
 			return true;
@@ -92,7 +92,7 @@ class BacktrackSolver implements SudokuSolver{
 		return false;
 	}
 
-	private function goBack(int &$y, int &$x){
+	private function goBack(&$y, &$x){
 		if($x > 0){
 			$x -= 2;
 		}else{

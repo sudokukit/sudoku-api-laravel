@@ -8,7 +8,7 @@ class DigConsultant{
 	private $location;
 	private $bound;
 
-	public function consultOnDigging(SudokuGrid $grid, $location, int $bound){
+	public function consultOnDigging(SudokuGrid $grid, $location, $bound){
 		$this->grid = $grid;
 		$this->location = $location;
 		$this->bound = $bound;

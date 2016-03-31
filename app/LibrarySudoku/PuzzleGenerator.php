@@ -14,7 +14,7 @@ class PuzzleGenerator{
 	private $stack;
 	private $sudokuGrid;
 
-	public function generatePuzzle(SudokuGrid $sudokuGrid, int $difficulty){
+	public function generatePuzzle(SudokuGrid $sudokuGrid, $difficulty){
 		$this->sudokuGrid = $sudokuGrid;
 		$this->setDifficulty($difficulty);
 		$this->populateRandomStack();
@@ -30,7 +30,7 @@ class PuzzleGenerator{
 		return $this->createPuzzle();
 	}
 
-	private function setDifficulty(int $difficulty){
+	private function setDifficulty($difficulty){
 		if($difficulty < 1 || $difficulty > 5){
 			$difficulty = 3;
 		}
