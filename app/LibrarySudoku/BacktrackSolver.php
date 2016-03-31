@@ -5,7 +5,7 @@ namespace App\LibrarySudoku;
 class BacktrackSolver implements SudokuSolver{
 	private $given;
 	
-	// this beast of a method is basically 'smart' depth first search
+	// this beast of a method is basically 'informed' depth first search
 	//
 	// Algorithm:
 	// traverse the grid ltr ttb, ignoring the 'given' cells

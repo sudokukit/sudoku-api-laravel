@@ -56,6 +56,14 @@
 					New Game
 				</button>
 			</div>
+			<div class="difficultyButtons">
+				<h4>Preferred Difficulty: {{preferredDifficulty.name}}
+					<i ng-repeat="star in preferredDifficulty.stars" class="glyphicon glyphicon-star star"></i>
+				</h4>
+				<div class="btn-group">
+				<button type="button" class="btn btn-lg" ng-repeat="difficultyButton in difficulties" ng-click="setPreferredDifficulty(difficultyButton.level)" ng-class="preferredDifficulty == difficultyButton ? 'btn-primary' : 'btn-default'">{{difficultyButton.name}}</button>
+</div>
+			</div>
 		</div>
 	</body>
 </html>

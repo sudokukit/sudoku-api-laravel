@@ -141,28 +141,27 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
     };
 
     // Puzzle
+
+    $scope.difficulties = [{ name: 'Very Easy', level: 1, stars: [1] },
+        { name: 'Easy', level: 2, stars: [1, 2] },
+        { name: 'Normal', level: 3, stars: [1, 2, 3] },
+        { name: 'Hard', level: 4, stars: [1, 2, 3, 4] },
+        { name: 'Legendary', level: 5, stars: [1, 2, 3, 4, 5] }
+    ];
+
     $scope.setDifficulty = function(difficulty) {
-        switch (difficulty) {
-            case 1:
-                $scope.difficulty = { name: 'Very Easy', level: 1, stars: [1] };
-                break;
-            case 2:
-                $scope.difficulty = { name: 'Easy', level: 2, stars: [1, 2] };
-                break;
-            case 3:
-                $scope.difficulty = { name: 'Normal', level: 3, stars: [1, 2, 3] };
-                break;
-            case 4:
-                $scope.difficulty = { name: 'Hard', level: 4, stars: [1, 2, 3, 4] };
-                break;
-            case 5:
-                $scope.difficulty = { name: 'Legendary', level: 5, stars: [1, 2, 3, 4, 5] };
-                break;
-            default:
-                $scope.setDifficulty(1);
-                break;
+        if (difficulty < 1 || difficulty > 5) {
+            difficulty = 3;
         }
+        $scope.difficulty = $scope.difficulties[difficulty - 1];
     };
+
+    $scope.setPreferredDifficulty = function(difficulty) {
+        if (difficulty < 1 || difficulty > 5) {
+            $scope.preferredDifficulty = 3;
+        }
+        $scope.preferredDifficulty = $scope.difficulties[difficulty - 1];
+    }
 
     $scope.puzzleToString = function() {
         $result = '';
@@ -189,7 +188,7 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
     $scope.newGame = function() {
         $http({
             method: 'GET',
-            url: '/api/puzzles/?difficulty=3'
+            url: '/api/puzzles/?difficulty=' + $scope.preferredDifficulty.level
         }).then(function successCallback(response) {
             $scope.setPuzzle(response.data);
         }, function errorCallback(response) {});
@@ -209,6 +208,7 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
     }
 
     // Initialize first puzzle
+    $scope.setPreferredDifficulty(3);
     $scope.newGame();
     $scope.resetResult();
 

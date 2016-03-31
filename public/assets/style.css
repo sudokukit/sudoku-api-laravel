@@ -18,9 +18,17 @@ div.difficulty {
     text-align: center;
 }
 
-i.star {
+.stars i.star {
     font-size: 50px;
     margin: 0px 5px;
+}
+
+.difficultyButtons {
+    text-align: center;
+}
+
+.difficultyButtons button.selected {
+    background-color:blue;
 }
 
 .puzzle table {
@@ -33,8 +41,8 @@ i.star {
     text-align: center;
     font-size: 28px;
     line-height: 40px;
-    width:50px;
-    height:44px;
+    width: 50px;
+    height: 44px;
     border: 1px solid #000000;
 }
 

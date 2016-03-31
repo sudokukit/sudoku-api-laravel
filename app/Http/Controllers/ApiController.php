@@ -17,12 +17,13 @@ class ApiController extends Controller
 {
     public function getPuzzle(Request $request, $id = null)
     {
-        
+        $difficulty     = $request->query('difficulty');
+
         $solutionGenerator = new SolutionGenerator;
         $solution          = $solutionGenerator->generateSolution();
         
         $puzzleGenerator = new PuzzleGenerator;
-        $puzzle          = $puzzleGenerator->generatePuzzle($solution, 3);
+        $puzzle          = $puzzleGenerator->generatePuzzle($solution, $difficulty);
         
         return response()->json(array(
             'puzzle' => $puzzle->getPuzzle(),
