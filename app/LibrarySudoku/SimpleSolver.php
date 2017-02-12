@@ -9,49 +9,28 @@ namespace App\LibrarySudoku;
  */
 class SimpleSolver implements SudokuSolver
 {
-    private $sudokuGrid;
-    private $edited;
-
+    /**
+     * Solves the grid as much as it can with simple logic.
+     *
+     * @param SudokuGrid $sudokuGrid The puzzle.
+     *
+     * @return SudokuGrid
+     */
     public function solve(SudokuGrid $sudokuGrid)
     {
-        $this->sudokuGrid = $sudokuGrid;
-        $finished = false;
-        while (! $finished) {
-            $this->edited = false;
-            for ($i = 0; $i < 9; $i++) {
-                for ($j = 0; $j < 9; $j++) {
-                    if ($this->sudokuGrid->getCell($j, $i) == 0) {
-                        $this->checkForCell($j, $i);
+        for ($row = 0; $row < 9; $row++) {
+            for ($column = 0; $column < 9; $column++) {
+                if ($sudokuGrid->getCell($row, $column) == 0) {
+                    $opportunities = $sudokuGrid->possibilitiesFor($row, $column);
+                    if (count($opportunities) == 1) {
+                        $sudokuGrid->setCell($row, $column, $opportunities[0]);
+                        $column = 0;
+                        $row = 0;
                     }
                 }
             }
-            $validator = new SudokuValidator;
-            if ($validator->countZeros($this->sudokuGrid) == 0) {
-                $finished = true;
-            } else {
-                if (! $this->edited) {
-                    return false;
-                }
-            }
         }
-        return $this->sudokuGrid;
-    }
 
-    public function checkForCell($x, $y)
-    {
-        $stack = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        $row = $this->sudokuGrid->getRow($y);
-        $stack = array_diff($stack, $row);
-        if (count($stack) > 1) {
-            $column = $this->sudokuGrid->getColumn($x);
-            $stack = array_diff($stack, $column);
-        }
-        if (count($stack) > 1) {
-            $block = $this->sudokuGrid->getBlock($x, $y);
-        }
-        if (count($stack) == 1) {
-            $this->sudokuGrid->setCell($x, $y);
-            $this->edited = true;
-        }
+        return $sudokuGrid;
     }
 }

@@ -41,28 +41,28 @@ class SudokuGrid
     /**
      * Sets the cell with given position to given value.
      *
-     * @param integer $x     The x position of the cell.
-     * @param integer $y     The y position of the cell.
-     * @param integer $value The value of the cell.
+     * @param integer $column The column of the cell.
+     * @param integer $row    The row of the cell.
+     * @param integer $value  The value of the cell.
      */
-    public function setCell(int $x, int $y, int $value)
+    public function setCell(int $row, int $column, int $value)
     {
         if ($value >= 0 && $value <= 9) {
-            $this->grid[$y][$x] = $value;
+            $this->grid[$row][$column] = $value;
         }
     }
 
     /**
      * Getter for single cell from the grid.
      *
-     * @param integer $x The x position of the cell.
-     * @param integer $y The y position of the cell.
+     * @param integer $row    The row of the cell.
+     * @param integer $column The column of the cell.
      *
      * @return integer
      */
-    public function getCell($x, $y)
+    public function getCell($row, $column)
     {
-        return $this->grid[$y][$x];
+        return $this->grid[$row][$column];
     }
 
     /**
@@ -112,17 +112,17 @@ class SudokuGrid
     /**
      * Returns a given column.
      *
-     * @param integer $columnNumber The column number.
+     * @param integer $column The column number.
      *
      * @return array
      */
-    public function getColumn(int $columnNumber)
+    public function getColumn(int $column)
     {
-        $column = [];
-        for ($i = 0; $i < 9; $i++) {
-            $column[$i] = $this->getCell($columnNumber, $i);
+        $response = [];
+        for ($row = 0; $row < 9; $row++) {
+            $response[] = $this->getCell($row, $column);
         }
-        return $column;
+        return $response;
     }
 
     /**
@@ -150,15 +150,14 @@ class SudokuGrid
      */
     public function getBlock($row, $column)
     {
-
         list($firstRowInBlock, $firstColumnInBlock) = $this->getFirstCellInBlock($row, $column);
         $block = [];
-        for ($i = 0; $i < 3; $i++) {
-            $number = $i * 3;
-            for ($j = 0; $j < 3; $j++) {
-                $block[$number + $j] = $this->getCell($j + $firstColumnInBlock, $i + $firstRowInBlock);
+        for ($row = 0; $row < 3; $row++) {
+            for ($column = 0; $column < 3; $column++) {
+                $block[] = $this->getCell($firstRowInBlock + $row, $firstColumnInBlock + $column);
             }
         }
+
         return $block;
     }
 
@@ -188,9 +187,9 @@ class SudokuGrid
      *
      * @return array|null
      */
-    public function possibilitiesFor(int $column, int $row)
+    public function possibilitiesFor(int $row, int $column)
     {
-        if ($this->getCell($column, $row) > 0) {
+        if ($this->getCell($row, $column) > 0) {
             return null;
         }
         $invalid_numbers = array_unique(array_merge(
@@ -200,5 +199,18 @@ class SudokuGrid
         ));
         $array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         return array_filter(array_values(array_diff($array, $invalid_numbers)));
+    }
+
+    /**
+     * Empties a given cell.
+     *
+     * @param integer $row    The row.
+     * @param integer $column The column.
+     *
+     * @return void
+     */
+    public function emptyCell($row, $column)
+    {
+        $this->grid[$row][$column] = 0;
     }
 }

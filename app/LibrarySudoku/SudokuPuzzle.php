@@ -14,6 +14,11 @@ class SudokuPuzzle
      */
     private $puzzle;
 
+    public function __construct(SudokuGrid $sudokuGrid)
+    {
+        $this->setGrid($sudokuGrid);
+    }
+
     /**
      * Getter for the puzzle.
      *
@@ -31,14 +36,14 @@ class SudokuPuzzle
      *
      * @return void
      */
-    public function setGrid(SudokuGrid $sudokuGrid)
+    private function setGrid(SudokuGrid $sudokuGrid)
     {
-        for ($i = 0; $i < 9; $i++) {
-            for ($j = 0; $j < 9; $j++) {
-                $value = $sudokuGrid->getCell($i, $j);
-                $this->puzzle[$j][$i] = [
+        for ($row = 0; $row < 9; $row++) {
+            for ($column = 0; $column < 9; $column++) {
+                $value = $sudokuGrid->getCell($row, $column);
+                $this->puzzle[$row][$column] = [
                     'given' => $value > 0,
-                    'value' => $value
+                    'value' => $value,
                 ];
             }
         }

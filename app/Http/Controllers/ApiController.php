@@ -19,10 +19,10 @@ class ApiController extends Controller
             throw new BadRequestHttpException('Invalid parameter: `difficulty`');
         }
 
-        $solutionGenerator = new SolutionGenerator;
+        $solutionGenerator = new SolutionGenerator();
         $solution = $solutionGenerator->generateSolution();
 
-        $puzzleGenerator = new PuzzleGenerator;
+        $puzzleGenerator = new PuzzleGenerator();
         $puzzle = $puzzleGenerator->generatePuzzle($solution, $difficulty);
 
         return response()->json([
@@ -44,10 +44,10 @@ class ApiController extends Controller
         if (strlen($solution) != 81 || ! is_numeric($solution)) {
             throw new BadRequestHttpException('Invalid parameter `solution`.');
         }
-        $sudokuParser = new SudokuParser;
+        $sudokuParser = new SudokuParser();
         $sudokuGrid = $sudokuParser->parse($solution);
 
-        $validator = new SudokuValidator;
+        $validator = new SudokuValidator();
         if ($validator->validate($sudokuGrid)) {
             $numberOfEmptyFields = $validator->numberOfEmptyFields($sudokuGrid);
             if ($numberOfEmptyFields > 0) {

@@ -3,19 +3,71 @@
 namespace App\LibrarySudoku;
 
 /**
+ * BackTrackSolver - Informed depth first search.
+ *
+ * The solver will traverse the grid ltr-ttb.
+ * Ignores any 'given' cells.
+ * For each empty cell it encounters:
+ * 1. Gets the possibilities.
+ * 2. Randomly fills one of those in.
+ * 3. Continues until it reaches the end (solved) or
+ *    encounters a cell that has no possibilities
+ * 4. Go back to the previous cell with multiple possibilities,
+ *    and choose another one from the random stack of options
  * Class BacktrackSolver
  */
 class BacktrackSolver implements SudokuSolver
 {
-    private $given;
+    const DIRECTION_FORWARD = true;
+    const DIRECTION_BACKWARDS = false;
+    /**
+     * A list of the original given cells of the sudoku puzzle.
+     *
+     * @var array
+     */
+    private $givenCells;
 
-    // this beast of a method is basically 'informed' depth first search
-    //
-    // Algorithm:
-    // traverse the grid ltr ttb, ignoring the 'given' cells
-    // choose random number from legal options and remove from stack
-    // go to next cell until cell has no options
-    // backtrack if we run out of possibilities, choose next value from stack at previous node
+    /**
+     * A matrix with for each cell a list of possibilities or 'false' if none
+     * @var array
+     */
+    private $possibilities;
+
+    /**
+     * The sudoku grid.
+     *
+     * @var SudokuGrid
+     */
+    private $sudokuGrid;
+
+    /**
+     * Direction of the solver.
+     *
+     * @var boolean
+     */
+    private $direction;
+
+    /**
+     * The current row.
+     *
+     * @var integer
+     */
+    private $row;
+
+    /**
+     * The current column.
+     *
+     * @var integer
+     */
+    private $column;
+
+    /**
+     * BacktrackSolver constructor.
+     */
+    public function __construct()
+    {
+        $this->reset();
+    }
 
     /**
      * Solves the given grid.
@@ -26,72 +78,156 @@ class BacktrackSolver implements SudokuSolver
      */
     public function solve(SudokuGrid $sudokuGrid)
     {
-        $possibilities = [];
-        for ($i = 0; $i < 9; $i++) {
-            for ($j = 0; $j < 9; $j++) {
-                $possibilities[$i][$j] = false;
-                $value = $sudokuGrid->getCell($j, $i);
-                if ($value > 0) {
-                    $this->given[] = ['x' => $j, 'y' => $i];
+        $this->initializeSolveGrid($sudokuGrid);
+
+
+        while ($this->locationIsValid()) {
+            if (! $this->cellIsGiven()) {
+                if ($this->goingBackwards()) {
+                    if ($this->hasPossibilities()) {
+                        $this->fillCell();
+                    } else {
+                        $this->emptyCell();
+                    }
+                } else {
+                    $this->initializePossibilities();
+                    if ($this->hasPossibilities()) {
+                        $this->fillCell();
+                    } else {
+                        $this->emptyCell();
+                        $this->direction = self::DIRECTION_BACKWARDS;
+                    }
                 }
             }
+            $this->nextCell();
         }
 
-        $backtrack = false;
-        for ($y = 0; $y < 9; $y++) {
-            for ($x = 0; $x < 9; $x++) {
-                if ($backtrack) {
-                    if ($possibilities[$y][$x] == false) { // make sure there is a list of possible numbers
-                        $possibilities[$y][$x] = $sudokuGrid->possibilitiesFor($x, $y);
-                    }
-                    if ($this->isGiven($x, $y) == true) {
-                        if (! $this->goBack($y, $x)) {
-                            return false;
-                        }
-                    } else {
-                        if (count($possibilities[$y][$x]) == 0) {
-                            $possibilities[$y][$x] = false;
-                            $sudokuGrid->setCell($x, $y, 0);
-                            if (! $this->goBack($y, $x)) {
-                                return false;
-                            }
-                        } else {
-                            $backtrack = false;
-                            $value = $this->getRandomValue($possibilities[$y][$x]);
-                            $sudokuGrid->setCell($x, $y, $value);
-                            if (count($possibilities[$y][$x] == 1)) {
-                                $possibilities[$y][$x] = false;
-                            } else {
-                                $possibilities[$y][$x] = array_filter(array_values(array_diff($possibilities[$y][$x],
-                                    [$value])));
-                            }
-                        }
-                    }
-                } else { // if we are not backtracking
-                    if ($possibilities[$y][$x] == false) {
-                        $possibilities[$y][$x] = $sudokuGrid->possibilitiesFor($x, $y);
-                    }
-                    if (! $this->isGiven($x, $y) == true) {
-                        if (count($possibilities[$y][$x]) == 0) {
-                            $backtrack = true;
-                            if (! $this->goBack($y, $x)) {
-                                return false;
-                            }
-                        } else {
-                            $value = $this->getRandomValue($possibilities[$y][$x]);
-                            $sudokuGrid->setCell($x, $y, $value);
-                            if (count($possibilities[$y][$x]) == 1) {
-                                $possibilities[$y][$x] = false;
-                            } else {
-                                $possibilities[$y][$x] = array_filter(array_values(array_diff($possibilities[$y][$x],
-                                    [$value])));
-                            }
-                        }
-                    }
+        return $this->success() ? $sudokuGrid : false;
+    }
+
+    private function emptyCell()
+    {
+        $this->sudokuGrid->emptyCell($this->row, $this->column);
+    }
+
+    /**
+     * Checks whether the solver was successful in solving the given sudoku.
+     *
+     * @return boolean
+     */
+    private function success()
+    {
+        if ($this->row == 9 && $this->column == 0) {
+            $response = true;
+        } else {
+            $response = false;
+        }
+
+        return $response;
+    }
+
+    /**
+     * Resets the class variables.
+     *
+     * @return void
+     */
+    private function reset()
+    {
+        $this->possibilities = [];
+        $this->givenCells = [];
+        $this->direction = self::DIRECTION_FORWARD;
+        $this->column = 0;
+        $this->row = 0;
+    }
+
+    /**
+     * Checks whether the current cell has any possibilities.
+     *
+     * @return boolean
+     */
+    private function hasPossibilities()
+    {
+        return ! empty($this->possibilities[$this->row][$this->column]);
+    }
+
+    /**
+     * Gets all possible fields from the grid for the current cell.
+     *
+     * @return void
+     */
+    private function initializePossibilities()
+    {
+        $possibilities = $this->sudokuGrid->possibilitiesFor($this->row, $this->column);
+        $this->possibilities[$this->row][$this->column] = $possibilities;
+    }
+
+    /**
+     * Checks if we are going backwards.
+     *
+     * @return boolean
+     */
+    private function goingBackwards()
+    {
+        return $this->direction == self::DIRECTION_BACKWARDS;
+    }
+
+    /**
+     * Checks whether our current location ($row, $column) is still a valid position.
+     *
+     * @return boolean
+     */
+    private function locationIsValid()
+    {
+        return $this->column >= 0 && $this->column < 9 && $this->row >= 0 && $this->row < 9;
+    }
+
+    /**
+     * Moves the row and column pointer 1 forward or backwards based on the current direction.
+     */
+    private function nextCell()
+    {
+        if ($this->direction == self::DIRECTION_FORWARD) {
+            $this->row = $this->column == 8 ? $this->row + 1 : $this->row;
+            $this->column = $this->column == 8 ? 0 : $this->column + 1;
+        } else {
+            $this->row = $this->column == 0 ? $this->row - 1 : $this->row;
+            $this->column = $this->column == 0 ? 8 : $this->column - 1;
+        }
+    }
+
+    /**
+     * Fills a cell with a random choice of one of its possibilities.
+     * Then sets direction to forward.
+     *
+     * @return void
+     */
+    private function fillCell()
+    {
+        $possibilities = $this->possibilities[$this->row][$this->column];
+        $value = $this->getRandomValue($possibilities);
+        $this->sudokuGrid->setCell($this->row, $this->column, $value);
+        $this->possibilities[$this->row][$this->column] = array_values(array_diff($possibilities, [$value]));
+        $this->direction = self::DIRECTION_FORWARD;
+    }
+
+    /**
+     * Saves all the given cells into the internal array.
+     *
+     * @param SudokuGrid $sudokuGrid The given sudoku puzzle.
+     *
+     * @return void
+     */
+    private function initializeSolveGrid(SudokuGrid $sudokuGrid)
+    {
+        $this->reset();
+        $this->sudokuGrid = $sudokuGrid;
+        for ($row = 0; $row < 9; $row++) {
+            for ($column = 0; $column < 9; $column++) {
+                if ($this->sudokuGrid->getCell($row, $column) > 0) {
+                    $this->givenCells[$row][$column] = true;
                 }
             }
         }
-        return $sudokuGrid;
     }
 
     /**
@@ -103,47 +239,17 @@ class BacktrackSolver implements SudokuSolver
      */
     private function getRandomValue(array $values)
     {
-        $numberOfValues = count($values);
-        $random = rand(1, $numberOfValues);
-        return $values[$random - 1];
+        $random = rand(1, count($values));
+        return $values[($random - 1)];
     }
 
     /**
-     * @param $x
-     * @param $y
+     * Checks if cell was given in original puzzle.
      *
      * @return boolean
      */
-    private function isGiven($x, $y)
+    private function cellIsGiven()
     {
-        for ($i = 0; $i < count($this->given); $i++) {
-            if ($this->given[$i]['x'] == $x && $this->given[$i]['y'] == $y) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Traverse back on the grid.
-     *
-     * @param $y
-     * @param $x
-     *
-     * @return bool
-     */
-    private function goBack(&$y, &$x)
-    {
-        if ($x > 0) {
-            $x -= 2;
-        } else {
-            $x = 7;
-            if ($y > 0) {
-                $y--;
-            } else {
-                return false;
-            }
-        }
-        return true;
+        return ! empty($this->givenCells[$this->row][$this->column]);
     }
 }

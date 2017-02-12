@@ -2,55 +2,85 @@
 
 namespace App\LibrarySudoku;
 
+/**
+ * Class SolutionGenerator
+ */
 class SolutionGenerator
 {
-
+    /**
+     * @var SudokuGrid
+     */
     private $sudokuGrid;
 
+    /**
+     * Generates
+     * @return SudokuGrid
+     */
     public function generateSolution()
     {
         do {
-            $this->sudokuGrid = new SudokuGrid;
+            $this->sudokuGrid = new SudokuGrid();
             $this->placeRandomStarters();
-        } while (! $this->solveSudoku());
+        } while (! $this->sudokuIsSolvable());
+
         return $this->sudokuGrid;
     }
 
+    /**
+     * Places 11 random numbers on the board while adhering to the rules.
+     *
+     * @return void
+     */
     private function placeRandomStarters()
     {
         for ($i = 0; $i < 11; $i++) {
-            $location = $this->getRandomEmptyCell();
+            list($row, $column) = $this->getRandomEmptyCell();
             do {
                 $value = rand(1, 9);
-                $this->sudokuGrid->setCell($location[0], $location[1], $value);
+                $this->sudokuGrid->setCell($row, $column, $value);
             } while (! $this->isValid());
         }
     }
 
+    /**
+     * Checks whether the sudoku currently is valid.
+     *
+     * @return boolean
+     */
     private function isValid()
     {
-        $validator = new SudokuValidator;
+        $validator = new SudokuValidator();
         return $validator->validate($this->sudokuGrid);
     }
 
+    /**
+     * Returns a random currently empty cell.
+     *
+     * @return array
+     */
     private function getRandomEmptyCell()
     {
-        $x = 0;
-        $y = 0;
         do {
-            $x = rand(0, 8);
-            $y = rand(0, 8);
-        } while ($this->sudokuGrid->getCell($x, $y) != 0);
-        return [$x, $y];
+            $column = rand(0, 8);
+            $row = rand(0, 8);
+        } while ($this->sudokuGrid->getCell($row, $column) != 0);
+        return [$row, $column];
     }
 
-    private function solveSudoku()
+    /**
+     * Uses the backtrack solver to check whether the given sudoku is solvable.
+     *
+     * @return boolean
+     */
+    private function sudokuIsSolvable()
     {
-        $solver = new BacktrackSolver;
-        if ($solver->solve($this->sudokuGrid)) {
-            return true;
+        $solver = new BacktrackSolver();
+        if (! $solver->solve($this->sudokuGrid)) {
+            $response = false;
         } else {
-            return false;
+            $response = true;
         }
+
+        return $response;
     }
 }
