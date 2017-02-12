@@ -19,6 +19,16 @@ class SudokuGrid
      */
     public function __construct()
     {
+        $this->initializeGrid();
+    }
+
+    /**
+     * Initializes the grid to empty fields.
+     *
+     * @return void
+     */
+    private function initializeGrid()
+    {
         $grid = [];
         for ($i = 0; $i < 9; $i++) {
             for ($j = 0; $j < 9; $j++) {
@@ -75,6 +85,18 @@ class SudokuGrid
         return $this->grid;
     }
 
+    public function getGridAsString()
+    {
+        $gridAsString = '';
+        foreach ($this->grid as $row) {
+            foreach ($row as $value) {
+                $gridAsString .= (string) $value;
+            }
+        }
+
+        return $gridAsString;
+    }
+
     /**
      * Returns given row of the grid.
      *
@@ -104,7 +126,7 @@ class SudokuGrid
     }
 
     /**
-     * Returns block by number (ltr,ttb)
+     * Returns block by number (ltr,ttb) (0-8)
      *
      * @param integer $blockNumber The block number.
      *
@@ -113,26 +135,49 @@ class SudokuGrid
     public function getBlockByNumber(int $blockNumber)
     {
         $mod3 = $blockNumber % 3;
-        $startColumn = $mod3 * 3;
-        $startRow = $blockNumber - $mod3;
-        return $this->getBlock($startColumn, $startRow);
+        $column = $mod3 * 3;
+        $row = $blockNumber - $mod3;
+        return $this->getBlock($row, $column);
     }
 
-    public function getBlock($x, $y)
+    /**
+     * Gets the entire block for a given single cell.
+     *
+     * @param integer $row    The row number.
+     * @param integer $column The column number.
+     *
+     * @return array
+     */
+    public function getBlock($row, $column)
     {
-        $block = [];
-        $mod_x = $x % 3;
-        $mod_y = $y % 3;
-        $x_start = $x - $mod_x;
-        $y_start = $y - $mod_y;
 
+        list($firstRowInBlock, $firstColumnInBlock) = $this->getFirstCellInBlock($row, $column);
+        $block = [];
         for ($i = 0; $i < 3; $i++) {
             $number = $i * 3;
             for ($j = 0; $j < 3; $j++) {
-                $block[$number + $j] = $this->getCell($j + $x_start, $i + $y_start);
+                $block[$number + $j] = $this->getCell($j + $firstColumnInBlock, $i + $firstRowInBlock);
             }
         }
         return $block;
+    }
+
+    /**
+     * Gets the first (left-top) cell of a 3x3 block.
+     *
+     * @param integer $row    The row.
+     * @param integer $column The column.
+     *
+     * @return array
+     */
+    private function getFirstCellInBlock($row, $column)
+    {
+        $columnNumberInBlock = $column % 3;
+        $rowNumberInBlock = $row % 3;
+        $firstColumnInBlock = $column - $columnNumberInBlock;
+        $firstRowInBlock = $row - $rowNumberInBlock;
+
+        return [$firstRowInBlock, $firstColumnInBlock];
     }
 
     /**
@@ -151,7 +196,7 @@ class SudokuGrid
         $invalid_numbers = array_unique(array_merge(
             $this->getRow($row),
             $this->getColumn($column),
-            $this->getBlock($column, $row)
+            $this->getBlock($row, $column)
         ));
         $array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         return array_filter(array_values(array_diff($array, $invalid_numbers)));

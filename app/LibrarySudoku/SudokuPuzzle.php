@@ -2,64 +2,44 @@
 
 namespace App\LibrarySudoku;
 
+/**
+ * Class SudokuPuzzle
+ */
 class SudokuPuzzle
 {
-    private $difficulty;
-    private $id;
-    private $solution_id;
+    /**
+     * The puzzle.
+     *
+     * @var array
+     */
     private $puzzle;
 
-    public function getDifficulty()
-    {
-        return $this->difficulty;
-    }
-
-    public function setDifficulty($difficulty)
-    {
-        $this->difficulty = $difficulty;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getSolutionId()
-    {
-        return $this->solution_id;
-    }
-
-    public function setSolutionId($solution_id)
-    {
-        $this->solution_id = $solution_id;
-    }
-
+    /**
+     * Getter for the puzzle.
+     *
+     * @return array
+     */
     public function getPuzzle()
     {
         return $this->puzzle;
     }
 
-    public function setPuzzle(SudokuGrid $sudokuGrid)
+    /**
+     * Fills the puzzle with given grid.
+     *
+     * @param SudokuGrid $sudokuGrid The sudoku grid.
+     *
+     * @return void
+     */
+    public function setGrid(SudokuGrid $sudokuGrid)
     {
         for ($i = 0; $i < 9; $i++) {
             for ($j = 0; $j < 9; $j++) {
                 $value = $sudokuGrid->getCell($i, $j);
-                if ($value == 0) {
-                    $this->puzzle[$j][$i] = [
-                        'given' => false,
-                        'value' => $value
-                    ];
-                } else {
-                    $this->puzzle[$j][$i] = [
-                        'given' => true,
-                        'value' => $value
-                    ];
-                }
+                $this->puzzle[$j][$i] = [
+                    'given' => $value > 0,
+                    'value' => $value
+                ];
             }
         }
     }

@@ -2,75 +2,118 @@
 
 namespace App\LibrarySudoku;
 
+/**
+ * Class SudokuValidator
+ */
 class SudokuValidator
 {
+    /**
+     * The sudokuGrid.
+     *
+     * @var SudokuGrid
+     */
     private $sudokuGrid;
 
+    /**
+     * Validates a sudoku grid. Checks if no invalid fields are filled.
+     *
+     * @param SudokuGrid $sudokuGrid The sudoku to be validated.
+     *
+     * @return boolean
+     */
     public function validate(SudokuGrid $sudokuGrid)
     {
         $this->sudokuGrid = $sudokuGrid;
-        if ($this->validateRows() && $this->validateColumns() && $this->validateBlocks()) {
-            return true;
+        if ($this->validateColumns() && $this->validateRows() && $this->validateBlocks()) {
+            $response = true;
         } else {
-            return false;
+            $response = false;
         }
+
+        return $response;
     }
 
-    public function countZeros($sudokuGrid)
+    /**
+     * Counts and returns the number of empty ('0') fields.
+     *
+     * @param SudokuGrid $sudokuGrid The sudoku grid.
+     *
+     * @return integer
+     */
+    public function numberOfEmptyFields(SudokuGrid $sudokuGrid)
     {
-        $this->sudokuGrid = $sudokuGrid;
-        $count = 0;
-        for ($i = 0; $i < 9; $i++) {
-            $counted_values = array_count_values($this->sudokuGrid->getRow($i));
-            // check if [0] exists then add it up
-            if (array_key_exists('0', $counted_values)) {
-                $count += $counted_values['0'];
-            }
-        }
-        return $count;
+        $gridAsString = $sudokuGrid->getGridAsString();
+
+        return substr_count($gridAsString, '0');
     }
 
+    /**
+     * Validates all rows.
+     *
+     * @return boolean
+     */
     private function validateRows()
     {
         for ($i = 0; $i < 9; $i++) {
-            if (! $this->validateRow(
-                $this->sudokuGrid->getRow($i)
-            )
-            ) {
-                return false;
+            $row = $this->sudokuGrid->getRow($i);
+            if (! $this->validateSet($row)) {
+                return false; // Returns as soon as any set fails to improve performance
             }
         }
+
         return true;
     }
 
+    /**
+     * Validates all columns.
+     *
+     * @return boolean
+     */
     private function validateColumns()
     {
         for ($i = 0; $i < 9; $i++) {
             $column = $this->sudokuGrid->getColumn($i);
-            if (! $this->validateRow($column)) {
-                return false;
+            if (! $this->validateSet($column)) {
+                return false; // Returns as soon as any set fails to improve performance
             }
         }
+
         return true;
     }
 
+    /**
+     * Validates all 3x3 blocks in the grid.
+     *
+     * @return boolean
+     */
     private function validateBlocks()
     {
         for ($i = 0; $i < 9; $i++) {
             $block = $this->sudokuGrid->getBlockByNumber($i);
-            if (! $this->validateRow($block)) {
-                return false;
+            if (! $this->validateSet($block)) {
+                return false; // Returns as soon as any set fails to improve performance
             }
         }
+
         return true;
     }
 
-    private function validateRow($row)
+    /**
+     * Validates a set, checks whether there are no duplicates (except 0 = empty)
+     *
+     * @param array $set The set of numbers to be validated.
+     *
+     * @return boolean
+     */
+    private function validateSet(array $set)
     {
-        $numbers = array_values(array_diff($row, [0]));
-        if (count(array_unique($numbers)) < count($numbers)) {
-            return false;
+        $set = array_diff($set, [0]);
+        if (count(array_unique($set)) < count($set)) {
+            $response = false;
+        } else {
+            $response = true;
         }
-        return true;
+
+        return $response;
     }
 }

@@ -7,38 +7,30 @@ namespace App\LibrarySudoku;
  */
 class DigConsultant
 {
-    private $grid;
-    private $location;
-    private $bound;
-
-    public function consultOnDigging(SudokuGrid $grid, $location, $bound)
+    /**
+     * Checks whether the grid is still uniquely solvable after digging out the given cell.
+     *
+     * @param SudokuGrid $grid     The grid.
+     * @param array      $location The location of the cell.
+     * @param integer    $bound    The minimum allowed bound.
+     *
+     * @return boolean
+     */
+    public function isSolvableAfterDigging(SudokuGrid $grid, array $location, int $bound)
     {
-        $this->grid = $grid;
-        $this->location = $location;
-        $this->bound = $bound;
+        $this->checkAllBounds($bound, $grid, $location);
 
-        if ($bound > 0) {
-            if ($this->checkHorizontalBounds()
-                && $this->checkVerticalBounds()
-                && $this->checkBlockBounds()
-            ) {
-                // everything OK
-            } else {
-                return false;
-            }
-        }
-        $solver = new BacktrackSolver;
-
-        $testGrid = clone $this->grid;
-        $testGrid->setCell($this->location['x'], $this->location['y'], 0);
-        $possibilities = $testGrid->possibilitiesFor($this->location['x'], $this->location['y']);
+        $solver = new BacktrackSolver();
+        $testGrid = clone $grid;
+        $testGrid->setCell($location['x'], $location['y'], 0);
+        $possibilities = $testGrid->possibilitiesFor($location['x'], $location['y']);
         $count = count($possibilities);
         if ($count > 1) {
-            $original = $this->grid->getCell($this->location['x'], $this->location['y']);
+            $original = $grid->getCell($location['x'], $location['y']);
             $possibilities = array_values(array_diff($possibilities, [$original]));
             $count--;
             for ($i = 0; $i < $count; $i++) {
-                $testGrid->setCell($this->location['x'], $this->location['y'], $possibilities[$i]);
+                $testGrid->setCell($location['x'], $location['y'], $possibilities[$i]);
                 if ($solver->solve($testGrid)) {
                     return false; // cell can't be dug out
                 }
@@ -47,29 +39,41 @@ class DigConsultant
         return true;
     }
 
-    private function checkHorizontalBounds()
+    private function checkAllBounds(int $bound, SudokuGrid $grid, array $location)
     {
-        $row = $this->grid->getRow($this->location['y']);
-        return $this->checkBounds($row);
+        if ($bound > 0) {
+            if (! $this->checkHorizontalBounds($bound, $grid, $location)
+                || ! $this->checkVerticalBounds($bound, $grid, $location)
+                || ! $this->checkBlockBounds($bound, $grid, $location)
+            ) {
+                return false;
+            }
+        }
     }
 
-    private function checkVerticalBounds()
+    private function checkHorizontalBounds($bound, $grid, array $location)
     {
-        $column = $this->grid->getColumn($this->location['x']);
-        return $this->checkBounds($column);
+        $row = $grid->getRow($location['y']);
+        return $this->checkBounds($bound, $row);
     }
 
-    private function checkBlockBounds()
+    private function checkVerticalBounds($bound, $grid, array $location)
     {
-        $block = $this->grid->getBlock($this->location['x'], $this->location['y']);
-        return $this->checkBounds($block);
+        $column = $grid->getColumn($location['x']);
+        return $this->checkBounds($bound, $column);
     }
 
-    private function checkBounds($values)
+    private function checkBlockBounds($bound, $grid, array $location)
+    {
+        $block = $grid->getBlock($location['x'], $location['y']);
+        return $this->checkBounds($bound, $block);
+    }
+
+    private function checkBounds($bound, $values)
     {
         $values = array_unique(array_diff($values, [0]));
         $remainingValues = count($values) - 1;
-        if ($remainingValues < $this->bound) {
+        if ($remainingValues < $bound) {
             return false;
         }
         return true;
