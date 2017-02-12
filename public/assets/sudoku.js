@@ -1,16 +1,16 @@
-var sudokuMaster = angular.module('SudokuMaster', ['cfp.hotkeys']).config(function(hotkeysProvider) {
+var sudokuMaster = angular.module('SudokuMaster', ['cfp.hotkeys']).config(function (hotkeysProvider) {
     hotkeysProvider.includeCheatSheet = false;
 });
 
-sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', function($scope, $http, hotkeys) {
+sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', function ($scope, $http, hotkeys) {
 
     // Navigating
     $scope.selected = {
-        row: 0,
+        row : 0,
         cell: 0
     };
 
-    $scope.moveUp = function() {
+    $scope.moveUp = function () {
         if ($scope.selected.row == 0) {
             $scope.selected.row = 8;
         } else {
@@ -18,7 +18,7 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         }
     };
 
-    $scope.moveDown = function() {
+    $scope.moveDown = function () {
         if ($scope.selected.row == 8) {
             $scope.selected.row = 0;
         } else {
@@ -26,7 +26,7 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         }
     };
 
-    $scope.moveLeft = function() {
+    $scope.moveLeft = function () {
         if ($scope.selected.cell == 0) {
             $scope.selected.cell = 8;
         } else {
@@ -34,7 +34,7 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         }
     };
 
-    $scope.moveRight = function() {
+    $scope.moveRight = function () {
         if ($scope.selected.cell == 8) {
             $scope.selected.cell = 0;
         } else {
@@ -42,13 +42,29 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         }
     };
 
-    hotkeys.add({ combo: 'up', description: 'Move up', callback: function() { $scope.moveUp(); } });
-    hotkeys.add({ combo: 'down', description: 'Move down', callback: function() { $scope.moveDown(); } });
-    hotkeys.add({ combo: 'left', description: 'Move left', callback: function() { $scope.moveLeft(); } });
-    hotkeys.add({ combo: 'right', description: 'Move right', callback: function() { $scope.moveRight(); } });
+    hotkeys.add({
+        combo: 'up', description: 'Move up', callback: function () {
+            $scope.moveUp();
+        }
+    });
+    hotkeys.add({
+        combo: 'down', description: 'Move down', callback: function () {
+            $scope.moveDown();
+        }
+    });
+    hotkeys.add({
+        combo: 'left', description: 'Move left', callback: function () {
+            $scope.moveLeft();
+        }
+    });
+    hotkeys.add({
+        combo: 'right', description: 'Move right', callback: function () {
+            $scope.moveRight();
+        }
+    });
 
     // Input 
-    $scope.setSelectedCell = function(number) {
+    $scope.setSelectedCell = function (number) {
         var cell = $scope.puzzle[$scope.selected.row][$scope.selected.cell];
         if (cell.given) {
             // cell is given so do nothing
@@ -58,112 +74,110 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
     };
 
     hotkeys.add({
-        combo: '0',
+        combo      : '0',
         description: 'Empty the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(0);
         }
     });
     hotkeys.add({
-        combo: 'backspace',
+        combo      : 'backspace',
         description: 'Empty the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(0);
         }
     });
     hotkeys.add({
-        combo: '1',
+        combo      : '1',
         description: 'Puts 1 in the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(1);
         }
     });
     hotkeys.add({
-        combo: '2',
+        combo      : '2',
         description: 'Puts 2 in the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(2);
         }
     });
     hotkeys.add({
-        combo: '3',
+        combo      : '3',
         description: 'Puts 3 in the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(3);
         }
     });
     hotkeys.add({
-        combo: '4',
+        combo      : '4',
         description: 'Puts 4 in the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(4);
         }
     });
     hotkeys.add({
-        combo: '5',
+        combo      : '5',
         description: 'Puts 5 in the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(5);
         }
     });
     hotkeys.add({
-        combo: '6',
+        combo      : '6',
         description: 'Puts 6 in the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(6);
         }
     });
     hotkeys.add({
-        combo: '7',
+        combo      : '7',
         description: 'Puts 7 in the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(7);
         }
     });
     hotkeys.add({
-        combo: '8',
+        combo      : '8',
         description: 'Puts 8 in the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(8);
         }
     });
     hotkeys.add({
-        combo: '9',
+        combo      : '9',
         description: 'Puts 9 in the selected cell',
-        callback: function() {
+        callback   : function () {
             $scope.setSelectedCell(9);
         }
     });
 
-
-    $scope.selectCell = function(rowId, cellId) {
-        $scope.selected = { row: rowId, cell: cellId };
+    $scope.selectCell = function (rowId, cellId) {
+        $scope.selected = {row: rowId, cell: cellId};
     };
 
     // Puzzle
-
-    $scope.difficulties = [{ name: 'Very Easy', level: 1, stars: [1] },
-        { name: 'Easy', level: 2, stars: [1, 2] },
-        { name: 'Normal', level: 3, stars: [1, 2, 3] },
-        { name: 'Hard', level: 4, stars: [1, 2, 3, 4] },
-        { name: 'Legendary', level: 5, stars: [1, 2, 3, 4, 5] }
+    $scope.difficulties = [{name: 'Very Easy', level: 1, stars: [1]},
+                           {name: 'Easy', level: 2, stars: [1, 2]},
+                           {name: 'Normal', level: 3, stars: [1, 2, 3]},
+                           {name: 'Hard', level: 4, stars: [1, 2, 3, 4]},
+                           {name: 'Legendary', level: 5, stars: [1, 2, 3, 4, 5]}
     ];
 
-    $scope.setDifficulty = function(difficulty) {
+    $scope.setDifficulty = function (difficulty) {
         if (difficulty < 1 || difficulty > 5) {
             difficulty = 3;
         }
         $scope.difficulty = $scope.difficulties[difficulty - 1];
     };
 
-    $scope.setPreferredDifficulty = function(difficulty) {
+    $scope.setPreferredDifficulty = function (difficulty) {
         if (difficulty < 1 || difficulty > 5) {
             $scope.preferredDifficulty = 3;
         }
         $scope.preferredDifficulty = $scope.difficulties[difficulty - 1];
-    }
+    };
 
-    $scope.puzzleToString = function() {
+    $scope.puzzleToString = function () {
         $result = '';
         for (var i = 0; i < 9; i++) {
             for (var j = 0; j < 9; j++) {
@@ -173,43 +187,44 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         return $result;
     };
 
-    $scope.setPuzzle = function(data) {
-        $scope.puzzle = data.puzzle;
+    $scope.setPuzzle = function (data) {
+        $scope.puzzle       = data.puzzle;
         $scope.backupPuzzle = angular.copy(data.puzzle);
-        $scope.puzzleId = data.id;
+        $scope.puzzleId     = data.id;
         $scope.setDifficulty(data.difficulty);
         $scope.resetResult();
     };
 
-    $scope.reset = function() {
+    $scope.reset = function () {
         $scope.puzzle = angular.copy($scope.backupPuzzle);
     };
 
-    $scope.newGame = function() {
+    $scope.newGame = function () {
         $http({
             method: 'GET',
-            url: '/api/puzzles/?difficulty=' + $scope.preferredDifficulty.level
+            url   : '/api/puzzles?difficulty=' + $scope.preferredDifficulty.level
         }).then(function successCallback(response) {
             $scope.setPuzzle(response.data);
-        }, function errorCallback(response) {});
+        }, function errorCallback(response) {
+        });
     };
 
-    $scope.validate = function() {
+    $scope.validate = function () {
         $http({
             method: 'GET',
-            url: '/api/solutions/?id=' + $scope.puzzleId + '&solution=' + $scope.puzzleToString()
+            url   : '/api/solutions?solution=' + $scope.puzzleToString()
         }).then(function successCallback(response) {
             $scope.result = response.data.result;
-        }, function errorCallback(response) {});
+        }, function errorCallback(response) {
+        });
     };
 
-    $scope.resetResult = function() {
+    $scope.resetResult = function () {
         $scope.result = "No results yet. Hit 'Check Sudoku' to check your progress!";
-    }
+    };
 
     // Initialize first puzzle
     $scope.setPreferredDifficulty(3);
     $scope.newGame();
     $scope.resetResult();
-
 }]);

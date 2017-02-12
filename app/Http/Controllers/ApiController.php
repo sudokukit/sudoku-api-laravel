@@ -12,6 +12,15 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class ApiController extends Controller
 {
+    /**
+     * Controller method for the GET /puzzles endpoint.
+     *
+     * @param Request $request The request.
+     *
+     * @return Response
+     *
+     * @throws BadRequestHttpException Throws exception when difficulty parameter is not valid.
+     */
     public function getPuzzle(Request $request)
     {
         $difficulty = $request->query('difficulty');
@@ -32,7 +41,11 @@ class ApiController extends Controller
     }
 
     /**
+     * Controller method for the GET /solutions endpoint.
      * Checks if the solution is valid.
+     *
+     * TODO : move most of the logic to a new manager
+     * TODO : move messages to front-end
      *
      * @param Request $request The request.
      *
