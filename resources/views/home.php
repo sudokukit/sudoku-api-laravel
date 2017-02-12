@@ -55,6 +55,10 @@
 					<i class="glyphicon glyphicon-play"></i>
 					New Game
 				</button>
+				<button type="button" class="btn btn-warning btn-lg" ng-click="getHelp()">
+					<i class="glyphicon glyphicon-eye-open"></i>
+					Hints
+				</button>
 			</div>
 			<div class="difficultyButtons">
 				<h4>Preferred Difficulty: {{preferredDifficulty.name}}

@@ -209,6 +209,18 @@ sudokuMaster.controller('sudokuController', ['$scope', '$http', 'hotkeys', funct
         });
     };
 
+    $scope.getHelp = function () {
+        $http({
+            method: 'GET',
+            url   : '/api/hints?difficulty=' + $scope.preferredDifficulty.level
+            + '&solution=' + $scope.puzzleToString()
+        }).then(function successCallback(response) {
+            $scope.setPuzzle(response.data);
+            console.log('got hints');
+        }, function errorCallback(response) {
+        });
+    };
+
     $scope.validate = function () {
         $http({
             method: 'GET',
