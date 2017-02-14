@@ -20,6 +20,7 @@ class BacktrackSolver implements SudokuSolver
 {
     const DIRECTION_FORWARD = true;
     const DIRECTION_BACKWARDS = false;
+
     /**
      * A list of the original given cells of the sudoku puzzle.
      *
@@ -28,7 +29,8 @@ class BacktrackSolver implements SudokuSolver
     private $givenCells;
 
     /**
-     * A matrix with for each cell a list of possibilities or 'false' if none
+     * A matrix with for each cell a list of possibilities or 'false' if none.
+     *
      * @var array
      */
     private $possibilities;
@@ -79,8 +81,6 @@ class BacktrackSolver implements SudokuSolver
     public function solve(SudokuGrid $sudokuGrid)
     {
         $this->initializeSolveGrid($sudokuGrid);
-
-
         while ($this->locationIsValid()) {
             if (! $this->cellIsGiven()) {
                 if ($this->goingBackwards()) {
@@ -105,6 +105,11 @@ class BacktrackSolver implements SudokuSolver
         return $this->success() ? $sudokuGrid : false;
     }
 
+    /**
+     * Empties the current cell.
+     *
+     * @return void
+     */
     private function emptyCell()
     {
         $this->sudokuGrid->emptyCell($this->row, $this->column);
