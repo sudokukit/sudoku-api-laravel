@@ -9,7 +9,6 @@ class SudokuValidator
 {
     /**
      * The sudokuGrid.
-     *
      * @var SudokuGrid
      */
     private $sudokuGrid;
@@ -21,16 +20,11 @@ class SudokuValidator
      *
      * @return boolean
      */
-    public function validate(SudokuGrid $sudokuGrid)
+    public function validate(SudokuGrid $sudokuGrid): bool
     {
         $this->sudokuGrid = $sudokuGrid;
-        if ($this->validateColumns() && $this->validateRows() && $this->validateBlocks()) {
-            $response = true;
-        } else {
-            $response = false;
-        }
 
-        return $response;
+        return $this->validateColumns() && $this->validateRows() && $this->validateBlocks();
     }
 
     /**
@@ -49,14 +43,13 @@ class SudokuValidator
 
     /**
      * Validates all rows.
-     *
      * @return boolean
      */
     private function validateRows()
     {
         for ($i = 0; $i < 9; $i++) {
             $row = $this->sudokuGrid->getRow($i);
-            if (! $this->validateSet($row)) {
+            if (!$this->validateSet($row)) {
                 return false; // Returns as soon as any set fails to improve performance
             }
         }
@@ -66,14 +59,13 @@ class SudokuValidator
 
     /**
      * Validates all columns.
-     *
      * @return boolean
      */
     private function validateColumns()
     {
         for ($i = 0; $i < 9; $i++) {
             $column = $this->sudokuGrid->getColumn($i);
-            if (! $this->validateSet($column)) {
+            if (!$this->validateSet($column)) {
                 return false; // Returns as soon as any set fails to improve performance
             }
         }
@@ -83,14 +75,13 @@ class SudokuValidator
 
     /**
      * Validates all 3x3 blocks in the grid.
-     *
      * @return boolean
      */
     private function validateBlocks()
     {
         for ($i = 0; $i < 9; $i++) {
             $block = $this->sudokuGrid->getBlockByNumber($i);
-            if (! $this->validateSet($block)) {
+            if (!$this->validateSet($block)) {
                 return false; // Returns as soon as any set fails to improve performance
             }
         }

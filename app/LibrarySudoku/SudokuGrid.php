@@ -7,11 +7,9 @@ namespace App\LibrarySudoku;
  */
 class SudokuGrid
 {
-    /**
-     * Matrix representation of sudoku grid.
-     *
-     * @var array
-     */
+    const EMPTY_CELL = 0;
+
+    /** @var int[] */
     private $grid;
 
     /**
@@ -24,7 +22,6 @@ class SudokuGrid
 
     /**
      * Initializes the grid to empty fields.
-     *
      * @return void
      */
     private function initializeGrid()
@@ -38,31 +35,16 @@ class SudokuGrid
         $this->grid = $grid;
     }
 
-    /**
-     * Sets the cell with given position to given value.
-     *
-     * @param integer $column The column of the cell.
-     * @param integer $row    The row of the cell.
-     * @param integer $value  The value of the cell.
-     */
-    public function setCell(int $row, int $column, int $value)
+    public function setCell(GridLocation $location, int $value): void
     {
-        if ($value >= 0 && $value <= 9) {
-            $this->grid[$row][$column] = $value;
+        if ($this->isValid($value)) {
+            $this->grid[$location->getRow()][$location->getColumn()] = $value;
         }
     }
 
-    /**
-     * Getter for single cell from the grid.
-     *
-     * @param integer $row    The row of the cell.
-     * @param integer $column The column of the cell.
-     *
-     * @return integer
-     */
-    public function getCell($row, $column)
+    public function getCell(GridLocation $location): int
     {
-        return $this->grid[$row][$column];
+        return $this->grid[$location->getRow()][$location->getColumn()];
     }
 
     /**
@@ -77,7 +59,6 @@ class SudokuGrid
 
     /**
      * Getter for the grid.
-     *
      * @return array
      */
     public function getGrid()
@@ -122,6 +103,7 @@ class SudokuGrid
         for ($row = 0; $row < 9; $row++) {
             $response[] = $this->getCell($row, $column);
         }
+
         return $response;
     }
 
@@ -137,80 +119,67 @@ class SudokuGrid
         $mod3 = $blockNumber % 3;
         $column = $mod3 * 3;
         $row = $blockNumber - $mod3;
+
         return $this->getBlock($row, $column);
     }
 
-    /**
-     * Gets the entire block for a given single cell.
-     *
-     * @param integer $row    The row number.
-     * @param integer $column The column number.
-     *
-     * @return array
-     */
-    public function getBlock($row, $column)
+    public function getBlock(GridLocation $location): array
     {
-        list($firstRowInBlock, $firstColumnInBlock) = $this->getFirstCellInBlock($row, $column);
+        $firstCellInBlock = $this->getFirstCellInBlock($location);
         $block = [];
         for ($row = 0; $row < 3; $row++) {
             for ($column = 0; $column < 3; $column++) {
-                $block[] = $this->getCell($firstRowInBlock + $row, $firstColumnInBlock + $column);
+                $block[] = $this->getCell(
+                    new GridLocation(
+                        $firstCellInBlock->getRow() + $row,
+                        $firstCellInBlock->getColumn() + $column
+                    )
+                );
             }
         }
 
         return $block;
     }
 
-    /**
-     * Gets the first (left-top) cell of a 3x3 block.
-     *
-     * @param integer $row    The row.
-     * @param integer $column The column.
-     *
-     * @return array
-     */
-    private function getFirstCellInBlock($row, $column)
+    private function getFirstCellInBlock(GridLocation $location): GridLocation
     {
-        $columnNumberInBlock = $column % 3;
-        $rowNumberInBlock = $row % 3;
-        $firstColumnInBlock = $column - $columnNumberInBlock;
-        $firstRowInBlock = $row - $rowNumberInBlock;
+        $firstRowInBlock = $location->getRow() - $location->getRow() % 3;
+        $firstColumnInBlock = $location->getColumn() - $location->getColumn() % 3;
 
-        return [$firstRowInBlock, $firstColumnInBlock];
+        return new GridLocation($firstRowInBlock, $firstColumnInBlock);
     }
 
-    /**
-     * Returns all possibilities for a given cell.
-     *
-     * @param integer $column The column position of the cell.
-     * @param integer $row    The row position of the cell.
-     *
-     * @return array|null
-     */
-    public function possibilitiesFor(int $row, int $column)
+    public function possibilitiesForCell(GridLocation $location): array
     {
-        if ($this->getCell($row, $column) > 0) {
-            return null;
+        if ($this->getCell($location) > 0) {
+           throw new NoPossibilitiesException();
         }
-        $invalid_numbers = array_unique(array_merge(
-            $this->getRow($row),
-            $this->getColumn($column),
-            $this->getBlock($row, $column)
-        ));
+        $impossibilities = array_unique(
+            array_merge(
+                $this->getRow($location->getRow()),
+                $this->getColumn($location->getColumn()),
+                $this->getBlock($location)
+            )
+        );
         $array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-        return array_filter(array_values(array_diff($array, $invalid_numbers)));
+
+        // todo throw exception if no possibilities
+
+        return array_filter(array_values(array_diff($array, $impossibilities)));
     }
 
-    /**
-     * Empties a given cell.
-     *
-     * @param integer $row    The row.
-     * @param integer $column The column.
-     *
-     * @return void
-     */
-    public function emptyCell($row, $column)
+    public function emptyCell(GridLocation $location): void
     {
-        $this->grid[$row][$column] = 0;
+        $this->setCell($location, self::EMPTY_CELL);
+    }
+
+    private function isValid($value): bool
+    {
+        return $value >= 0 && $value <= 9;
+    }
+
+    public function isEmpty($location): bool
+    {
+        return $this->getCell($location) !== self::EMPTY_CELL;
     }
 }

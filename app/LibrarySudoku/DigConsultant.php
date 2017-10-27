@@ -2,145 +2,84 @@
 
 namespace App\LibrarySudoku;
 
-/**
- * Class DigConsultant
- */
 class DigConsultant
 {
     /**
-     * The solver.
-     *
-     * @var SudokuSolver
+     * @var SudokuSolverInterface
      */
     private $solver;
 
-    /**
-     * DigConsultant constructor.
-     */
+    // Todo proper dependency injection
     public function __construct()
     {
         $this->solver = new BacktrackSolver();
     }
 
-    /**
-     * Checks whether the grid is still uniquely solvable after digging out the given cell.
-     *
-     * @param SudokuGrid $sudokuGrid The grid.
-     * @param array      $location   The location of the cell.
-     * @param integer    $bound      The minimum allowed bound.
-     *
-     * @return boolean
-     */
-    public function isSolvableAfterDigging(SudokuGrid $sudokuGrid, array $location, int $bound)
+    public function isDiggableAndUniquelySolvableAfterDigging(
+        SudokuGrid $sudokuGrid,
+        GridLocation $location,
+        int $bound
+    ): bool {
+        return $this->cellIsDiggable($sudokuGrid, $location, $bound)
+            && $this->cellIsUniquelySolvableAfterDigging($sudokuGrid, $location);
+    }
+
+    private function cellIsDiggable(SudokuGrid $grid, GridLocation $location, int $bound): bool
     {
-        if (! $this->checkAllBounds($bound, $sudokuGrid, $location)) {
-            return false;
-        }
-        $originalValue = $sudokuGrid->getCell($location['y'], $location['x']);
-        $testGrid = clone $sudokuGrid;
-        $testGrid->emptyCell($location['y'], $location['x']);
-        $possibilities = $testGrid->possibilitiesFor($location['y'], $location['x']);
+        return $bound <= 0 || (
+                $this->rowIsDiggable($grid, $location, $bound)
+                && $this->columnIsDiggable($grid, $location, $bound)
+                && $this->blockIsDiggable($grid, $location, $bound)
+            );
+    }
+
+    private function cellIsUniquelySolvableAfterDigging(SudokuGrid $grid, GridLocation $location): bool
+    {
+        $originalValue = $grid->getCell($location);
+        $gridCopy = clone $grid;
+        $gridCopy->emptyCell($location);
+        $possibilities = $gridCopy->possibilitiesForCell($location);
         if (count($possibilities) > 1) {
             $possibilities = array_diff($possibilities, [$originalValue]);
             foreach ($possibilities as $possibility) {
-                $testGrid->setCell($location['y'], $location['x'], $possibility);
-                if ($this->solver->solve($testGrid)) {
-                    return false; // Digging action results in multi solvable solution
+                $gridCopy->setCell($location, $possibility);
+                if ($this->solver->solve($gridCopy)) {
+                    return false;
                 }
             }
         }
+
         return true;
     }
 
-    /**
-     * Checks all bounds for rows, columns & blocks. Makes sure there is at least $bound amount
-     * of filled in values present in said row, column or block.
-     *
-     * @param integer    $bound    The bound.
-     * @param SudokuGrid $grid     The grid.
-     * @param array      $location The location of the cell.
-     *
-     * @return boolean
-     */
-    private function checkAllBounds(int $bound, SudokuGrid $grid, array $location)
+    private function rowIsDiggable(SudokuGrid $grid, GridLocation $location, int $bound): bool
     {
-        $response = true;
-        if ($bound > 0) { // performance
-            if (! $this->checkHorizontalBounds($bound, $grid, $location)
-                || ! $this->checkVerticalBounds($bound, $grid, $location)
-                || ! $this->checkBlockBounds($bound, $grid, $location)
-            ) {
-                $response = false;
-            }
-        }
+        $row = $grid->getRow($location->getRow());
 
-        return $response;
+        return $this->sectionIsDiggable($row, $bound);
     }
 
-    /**
-     * Checks the row if bound constraint is still met.
-     *
-     * @param integer    $bound    The bound.
-     * @param SudokuGrid $grid     The grid.
-     * @param array      $location The location of the cell.
-     *
-     * @return boolean
-     */
-    private function checkHorizontalBounds(int $bound, SudokuGrid $grid, array $location)
+    private function columnIsDiggable(SudokuGrid $grid, GridLocation $location, int $bound): bool
     {
-        $row = $grid->getRow($location['y']);
-        return $this->checkBound($bound, $row);
+        $column = $grid->getColumn($location->getColumn());
+
+        return $this->sectionIsDiggable($column, $bound);
     }
 
-    /**
-     * Checks the column if bound constraint is still met.
-     *
-     * @param integer    $bound    The bound.
-     * @param SudokuGrid $grid     The grid.
-     * @param array      $location The location of the cell.
-     *
-     * @return boolean
-     */
-    private function checkVerticalBounds(int $bound, SudokuGrid $grid, array $location)
+    private function blockIsDiggable(SudokuGrid $grid, GridLocation $location, int $bound): bool
     {
-        $column = $grid->getColumn($location['x']);
-        return $this->checkBound($bound, $column);
+        $block = $grid->getBlock($location);
+
+        return $this->sectionIsDiggable($block, $bound);
     }
 
-    /**
-     * Checks the 3x3 block if bound constraint is still met.
-     *
-     * @param integer    $bound    The bound.
-     * @param SudokuGrid $grid     The grid.
-     * @param array      $location The location of the cell.
-     *
-     * @return boolean
-     */
-    private function checkBlockBounds(int $bound, SudokuGrid $grid, array $location)
+    private function sectionIsDiggable(array $cells, int $bound): bool
     {
-        $block = $grid->getBlock($location['y'], $location['x']);
-        return $this->checkBound($bound, $block);
+        return $this->numberOfFilledInCells($cells) > ($bound - 1);
     }
 
-
-    /**
-     * Checks if the list of values has at least $bound - 1 values > 0
-     *
-     * @param integer $bound  The bound.
-     * @param array   $values The values.
-     *
-     * @return boolean
-     */
-    private function checkBound(int $bound, array $values)
+    private function numberOfFilledInCells(array $cells): int
     {
-        $values = array_unique(array_diff($values, [0]));
-        $remainingValues = count($values) - 1; // -1 is to check without the currently filled in cell.
-        if ($remainingValues < $bound) {
-            $response = false;
-        } else {
-            $response = true;
-        }
-
-        return $response;
+        return count(array_diff($cells, [SudokuGrid::EMPTY_CELL]));
     }
 }

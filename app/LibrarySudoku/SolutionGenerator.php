@@ -7,80 +7,72 @@ namespace App\LibrarySudoku;
  */
 class SolutionGenerator
 {
+    // todo make configurable
+    const NUMBER_OF_RANDOM_STARTERS = 11;
+
     /**
      * @var SudokuGrid
      */
     private $sudokuGrid;
 
     /**
-     * Generates
-     * @return SudokuGrid
+     * @var SudokuValidator
      */
-    public function generateSolution()
+    private $validator;
+
+    // todo proper dependency injection
+    public function __construct()
+    {
+        $this->validator = new SudokuValidator();
+    }
+
+    public function generateSolution(): SudokuGrid
     {
         do {
             $this->sudokuGrid = new SudokuGrid();
             $this->placeRandomStarters();
-        } while (! $this->sudokuIsSolvable());
+        } while (!$this->sudokuIsSolvable());
 
         return $this->sudokuGrid;
     }
 
-    /**
-     * Places 11 random numbers on the board while adhering to the rules.
-     *
-     * @return void
-     */
-    private function placeRandomStarters()
+    private function placeRandomStarters(): void
     {
-        for ($i = 0; $i < 11; $i++) {
-            list($row, $column) = $this->getRandomEmptyCell();
+        for ($i = 0; $i < self::NUMBER_OF_RANDOM_STARTERS; $i++) {
+            $location = $this->getRandomEmptyCell();
             do {
-                $value = rand(1, 9);
-                $this->sudokuGrid->setCell($row, $column, $value);
-            } while (! $this->isValid());
+                $this->sudokuGrid->setCell($location, random_int(1, 9));
+            } while (!$this->isValid());
         }
     }
 
-    /**
-     * Checks whether the sudoku currently is valid.
-     *
-     * @return boolean
-     */
-    private function isValid()
+    private function isValid(): bool
     {
-        $validator = new SudokuValidator();
-        return $validator->validate($this->sudokuGrid);
+        return $this->validator->validate($this->sudokuGrid);
     }
 
     /**
      * Returns a random currently empty cell.
-     *
      * @return array
      */
-    private function getRandomEmptyCell()
+    private function getRandomEmptyCell(): GridLocation
     {
         do {
-            $column = rand(0, 8);
-            $row = rand(0, 8);
-        } while ($this->sudokuGrid->getCell($row, $column) != 0);
-        return [$row, $column];
+            $location = new GridLocation(random_int(0, 8), random_int(0, 8));
+        } while ($this->sudokuGrid->isEmpty($location));
+
+        return $location;
     }
 
-    /**
-     * Uses the backtrack solver to check whether the given sudoku is solvable.
-     *
-     * @return boolean
-     */
-    private function sudokuIsSolvable()
+    private function sudokuIsSolvable(): bool
     {
         $solver = new BacktrackSolver();
-        if (! $solver->solve($this->sudokuGrid)) {
-            $response = false;
-        } else {
-            $response = true;
-        }
+        try {
+            $solver->solve($this->sudokuGrid);
 
-        return $response;
+            return true;
+        } catch (UnsolvableException $exception) {
+            return false;
+        }
     }
 }

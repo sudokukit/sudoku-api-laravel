@@ -14,28 +14,24 @@ class PuzzleGenerator
 
     /**
      * Difficulty level.
-     *
      * @var integer
      */
     private $difficulty;
 
     /**
      * A list of cell locations to be dug out.
-     *
      * @var array
      */
     private $stack;
 
     /**
      * The sudoku grid.
-     *
      * @var SudokuGrid
      */
     private $sudokuGrid;
 
     /**
      * The dig consultant.
-     *
      * @var DigConsultant
      */
     private $digConsultant;
@@ -52,7 +48,7 @@ class PuzzleGenerator
      * Generate a sudoku puzzle from a given solution.
      *
      * @param SudokuGrid $sudokuGrid A full sudoku solution.
-     * @param integer    $difficulty The difficulty level.
+     * @param integer $difficulty The difficulty level.
      *
      * @return SudokuPuzzle
      */
@@ -68,7 +64,6 @@ class PuzzleGenerator
 
     /**
      * Populates the stack with a list of random cell values.
-     *
      * @return void
      */
     private function populateRandomStack()
@@ -81,7 +76,6 @@ class PuzzleGenerator
 
     /**
      * Empty all the cells from stack in the grid if possible.
-     *
      * @return void
      */
     private function digHoles()
@@ -89,8 +83,9 @@ class PuzzleGenerator
         $numberOfHoles = self::DIFFICULTY_LEVELS[$this->difficulty - 1]['holes'];
         $bound = self::DIFFICULTY_LEVELS[$this->difficulty - 1]['bound'];
         for ($i = 0; $i < $numberOfHoles; $i++) {
-            if ($this->digConsultant->isSolvableAfterDigging($this->sudokuGrid, $this->stack[$i], $bound)) {
-                $this->sudokuGrid->emptyCell($this->stack[$i]['y'], $this->stack[$i]['x']);
+            $location = new GridLocation($this->stack[$i]['y'], $this->stack[$i]['x']);
+            if ($this->digConsultant->isDiggableAndUniquelySolvableAfterDigging($this->sudokuGrid, $location, $bound)) {
+                $this->sudokuGrid->emptyCell($location);
             }
         }
     }
