@@ -23,7 +23,6 @@ class AddData extends Migration
                 'solution_id' => $solution_id,
                 'difficulty' => 3
             ));
-        
     }
 
     /**

@@ -46,7 +46,6 @@ class ApiController extends Controller
             'puzzle' => $improvedPuzzle->getPuzzle(),
             'difficulty' => $difficulty
         ]);
-
     }
 
     /**
