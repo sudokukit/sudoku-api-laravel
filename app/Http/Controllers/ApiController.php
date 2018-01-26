@@ -14,9 +14,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 /**
  * Class ApiController
- *
- * TODO : move most of the logic to a new manager
- * TODO : move messages to front-end
  */
 class ApiController extends Controller
 {
